@@ -243,7 +243,7 @@ class Toplevel1:
         self.Button6.configure(highlightcolor="black")
         self.Button6.configure(pady="0")
         self.Button6.configure(text='''text languages''', command=self.langs)
-        self.var1 = None
+        self.var1 = 0
         self.var1 = IntVar()
         v= Checkbutton(top, text="Stemming?", variable=self.var1, )
         v.place(relx=.80, rely=.55, anchor="c")
@@ -284,12 +284,12 @@ class Toplevel1:
         if(os.path.exists(self.Entry1.get()+"/S_baseDict.ujson") and self.var1 == 1):
             os.remove(self.Entry1.get() + "/S_baseDict.ujson")
         if(self.makeIndex != None):
-            if(self.var1 == 0):
+            if(self.var1.get() == 0):
                 os.remove(self.Entry1.get()+"/finalIndex.txt")
                 os.remove(self.Entry1.get()+"/fileIndex.ujson")
                 os.remove(self.Entry1.get()+"/citiesIndex.ujson")
                 os.remove(self.Entry1.get()+"/baseDict.ujson")
-            elif self.var1 == 1:
+            elif self.var1.get() == 1:
                 os.remove(self.Entry1.get()+"/S_finalIndex.txt")
                 os.remove(self.Entry1.get()+"/S_fileIndex.ujson")
                 os.remove(self.Entry1.get()+"/S_citiesIndex.ujson")
@@ -331,13 +331,13 @@ class Toplevel1:
 
     def clearAll(self):
         try:
-            if(self.var1 == 0):
-                os.remove(self.Entry1.get()+"/finalIndex.txt")
+            if(self.var1.get() == 0):
+                os.remove(self.Entry1.get()+"/finalIndexName.txt")
                 os.remove(self.Entry1.get()+"/fileIndex.ujson")
                 os.remove(self.Entry1.get()+"/citiesIndex.ujson")
                 os.remove(self.Entry1.get()+"/baseDict.ujson")
-            elif self.var1 == 1:
-                os.remove(self.Entry1.get()+"/S_finalIndex.txt")
+            elif self.var1.get() == 1:
+                os.remove(self.Entry1.get()+"/S_finalIndexName.txt")
                 os.remove(self.Entry1.get()+"/S_fileIndex.ujson")
                 os.remove(self.Entry1.get()+"/S_citiesIndex.ujson")
                 os.remove(self.Entry1.get()+"/S_baseDict.ujson")
