@@ -66,9 +66,9 @@ class ReadFile:
         print("~### FINAL MERGE ###~ : ", stop - self.start, "seconds")  ## CLEAR PRINT!
         self.indexer.finalMerge()
         if (self.do_Stemming):
-            self.indexer.indexMaker("S_finalIndexName")
+            self.indexer.indexMaker("S_finalIndex")
         else:
-            self.indexer.indexMaker("finalIndexName")
+            self.indexer.indexMaker("finalIndex")
         stop = timeit.default_timer()  ## CLEAR PRINT!
         print("~### INDEX MAKER ###~ : ", stop - self.start, "seconds")  ## CLEAR PRINT!
 
