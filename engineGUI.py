@@ -79,7 +79,7 @@ class Toplevel1:
         self.style.map('.',background=
             [('selected', _compcolor), ('active',_ana2color)])
 
-        top.geometry("558x220+474+198")
+        top.geometry("668x420+474+198")
         top.title("Engine!")
         top.configure(background="#d9d9d9")
         top.configure(highlightbackground="#d9d9d9")
