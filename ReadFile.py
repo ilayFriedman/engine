@@ -18,6 +18,7 @@ class ReadFile:
         self.fileIndex = defaultdict(list)
         self.citiesList = []
         self.langList = []
+        self.textsList = []
 
         with open(pathSurce + "/stop_words.txt", "r+") as SW:
             self.stop_words = map(str.strip, SW.readlines())
@@ -44,6 +45,7 @@ class ReadFile:
                     auto.seek(0)
                     self.breakToParts(auto, "<TEXT>", "</TEXT>", "<DOCNO>", "<F P=105>", "<F P=104>")
                     auto.close()
+                    self.parseAndIndex()
                 self.indexer.merge()
                 self.indexer.tmpDict.clear()
                 i = i + 1
@@ -76,34 +78,43 @@ class ReadFile:
     def breakToParts(self, file, openLabel, closeLabel, subLabel=None, languge=None, subCity=None):
         inPart = False
         stringText = ""
-        openSubValue = ""
-        subLangValue = ""
-        subCityValue = ""
+        fileTitle = ""
+        fileLang = ""
+        fileCity = ""
 
         for line in file:
             if (subLabel != None and subLabel in line):
-                openSubValue = line[line.index('>') + 1:-(len(line) - line.index('<', 2))].strip()
+                fileTitle = line[line.index('>') + 1:-(len(line) - line.index('<', 2))].strip()
             elif (languge != None and languge in line and '><' not in line):
-                subLangValue = (line[line.index('>') + 1:-(len(line) - line.index('<', 11))].strip())
+                fileLang = (line[line.index('>') + 1:-(len(line) - line.index('<', 11))].strip())
             elif (subCity != None and subCity in line and '><' not in line):
-                subCityValue = (line[line.index('>') + 1:-(len(line) - line.index(' ', 11))].strip())
+                fileCity = (line[line.index('>') + 1:-(len(line) - line.index(' ', 11))].strip())
             elif (line.strip() == openLabel):
                 inPart = True
+                continue
             elif (line.strip() == closeLabel):
                 self.textCount = self.textCount + 1
                 inPart = False
-                afterParse = self.parser.parseText(stringText)
-                if (self.do_Stemming):
-                    afterParse = self.makeStemList(afterParse)
-                self.indexer.tokenList = afterParse
-                self.indexer.add(openSubValue)
+                self.textsList.append([stringText,fileTitle,fileCity,fileLang])
+                self.langList.append(fileLang)
                 stringText = ""
-                self.fileIndex[openSubValue] = [self.indexer.maxTF, len(self.indexer.tokenList), subCityValue,
-                                                subLangValue]
-                self.langList.append(subLangValue)
                 continue
             if (inPart):
                 stringText += line
+
+    def parseAndIndex(self):
+        for fileList in self.textsList:
+            text = fileList[0]
+            title = fileList[1]
+            city = fileList[2]
+            lang = fileList[3]
+            afterParse = self.parser.parseText(text)
+            if (self.do_Stemming):
+                afterParse = self.makeStemList(afterParse)
+            self.indexer.tokenList = afterParse
+            self.indexer.add(title)
+            self.fileIndex[title] = [self.indexer.maxTF, len(self.indexer.tokenList), city, lang]
+        self.textsList.clear()
 
     def readAllCities(self, file, subCity):  # make allCity list first
         subCityValue = ""
@@ -139,5 +150,7 @@ class ReadFile:
     def makeStemList(self, afterParse):
         ps = PorterStemmer()
         for i in range(0, len(afterParse)):
-            afterParse[i] = ps.stem(afterParse[i])
+            if(afterParse[i][0].isalpha()):
+                afterParse[i] = ps.stem(afterParse[i])
+            continue
         return afterParse

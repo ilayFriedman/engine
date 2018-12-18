@@ -16,6 +16,7 @@ class Parse:
         string5 = "March April MARCH APRIL"
         string4 = "June July JUNE JULY"
         string3 = "May MAY Jan Feb Mar Apr Jun Jul Aug Sep Oct Nov Dec"
+
         stringTextList = re.split('[ \n]', re.sub("[*~@#^&;:!?\',(){}\[\]\"\=+]", " ", text))
         tokenList = []
         i = 0;

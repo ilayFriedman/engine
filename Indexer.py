@@ -18,7 +18,7 @@ class Indexer:
         self.numCount = {}
         self.citiesIndex = defaultdict(list)
         self.maxTF = 0
-        self.numbersOfCapital=0
+        self.numbersOfCapital = 0
 
     def add(self, fileName):
         currDict = defaultdict(list)
@@ -30,9 +30,8 @@ class Indexer:
         else:
             self.maxTF = 0
 
-
         for token in self.tokenList:
-            if(token == ''):
+            if (token == ''):
                 continue
             if (token in self.baseDict):
                 self.baseDict[token][2] = self.baseDict[token][2] + self.numCount[token]
@@ -77,10 +76,10 @@ class Indexer:
                             currDict[token.lower()].append([fileName, self.numCount[token]])
                     else:
                         if (token[0].islower() or token[0].isdigit() or token[1:].isdigit()):
-                            self.baseDict[token.lower()] = [-1, -1, self.numCount[token],-1]
+                            self.baseDict[token.lower()] = [-1, -1, self.numCount[token], -1]
                             currDict[token.lower()].append([fileName, self.numCount[token]])
                         elif (token[0].isupper() or token[0].isdigit() or token[1:].isdigit()):
-                            self.baseDict[token.upper()] = [-1, -1, self.numCount[token],-1]
+                            self.baseDict[token.upper()] = [-1, -1, self.numCount[token], -1]
                             currDict[token.upper()].append([fileName, self.numCount[token]])
         self.tmpDict.append(currDict)
 
@@ -110,20 +109,20 @@ class Indexer:
                 dict[keys[i]] = result_dict[keys[i]]
                 i += 1
             elif (len(dict.items()) != 0):
-                with open(self.pathToWrite+"/" + letter + str(num) + ".ujson", "w+") as tmpFileDict:
+                with open(self.pathToWrite + "/" + letter + str(num) + ".ujson", "w+") as tmpFileDict:
                     ujson.dump(dict, tmpFileDict)
                     dict.clear()
                 tmpFileDict.close()
                 if (i < len(keys)):
                     letter = keys[i][0]
-        with open(self.pathToWrite+"/" + letter + str(num) + ".ujson", "w+") as tmpFileDict:
+        with open(self.pathToWrite + "/" + letter + str(num) + ".ujson", "w+") as tmpFileDict:
             ujson.dump(dict, tmpFileDict)
             dict.clear()
         tmpFileDict.close()
         self.dictOfFiles.clear()
 
     def finalMerge(self):
-        filesNames = sorted(os.listdir(self.pathToWrite+"/"))
+        filesNames = sorted(os.listdir(self.pathToWrite + "/"))
         filesNames.sort(key=str.casefold)
 
         getAtLeastOnce = False
@@ -136,10 +135,10 @@ class Indexer:
             if (letter.lower() == filesNames[i][0].lower()):
                 getAtLeastOnce = True
                 fileName = filesNames[i]
-                with open(self.pathToWrite+"/" + fileName, "r+") as file:
+                with open(self.pathToWrite + "/" + fileName, "r+") as file:
                     dict.append(ujson.load(file))
                     file.close()
-                    os.remove(self.pathToWrite+"/" + fileName)
+                    os.remove(self.pathToWrite + "/" + fileName)
                     file.close()
                     # filesNames.remove(fileName)
                     i += 1
@@ -148,7 +147,7 @@ class Indexer:
                 for d in dict:
                     for k, v in d.items():
                         result_dict.setdefault(k, []).extend(v)
-                with open(self.pathToWrite+"/" + str(letter).upper() + ".ujson", "w+") as tmpFileDict:
+                with open(self.pathToWrite + "/" + str(letter).upper() + ".ujson", "w+") as tmpFileDict:
                     ujson.dump(result_dict, tmpFileDict)
                 dict = []
                 result_dict.clear()
@@ -160,22 +159,22 @@ class Indexer:
         for d in dict:
             for k, v in d.items():
                 result_dict.setdefault(k, []).extend(v)
-        with open(self.pathToWrite+"/" + str(letter).upper() + ".ujson", "w+") as tmpFileDict:
+        with open(self.pathToWrite + "/" + str(letter).upper() + ".ujson", "w+") as tmpFileDict:
             ujson.dump(result_dict, tmpFileDict)
             tmpFileDict.close()
         result_dict.clear()
 
-    def indexMaker(self,finalIndexName):
-        self.finalIndexName=finalIndexName
-        filesNames = sorted(os.listdir(self.pathToWrite+"/"))
+    def indexMaker(self, finalIndexName):
+        self.finalIndexName = finalIndexName
+        filesNames = sorted(os.listdir(self.pathToWrite + "/"))
         if (len((filesNames)) > 0):
-            finalFile = open(self.pathToWrite+"/"+finalIndexName+".txt", "a+")
+            finalFile = open(self.pathToWrite + "/" + finalIndexName + ".txt", "a+")
         for file in filesNames:
             tempDict = {}
-            with open(self.pathToWrite+"/" + file, "r+") as Jfile:
+            with open(self.pathToWrite + "/" + file, "r+") as Jfile:
                 tempDict = ujson.load(Jfile)
             Jfile.close()
-            os.remove(self.pathToWrite+"/" + str(file))
+            os.remove(self.pathToWrite + "/" + str(file))
             for item in tempDict:
                 begin = int(finalFile.tell())
                 if (item in self.baseDict):
@@ -193,7 +192,7 @@ class Indexer:
     def readFromFile(self, token):
         offset = self.baseDict[token][0]
         size = self.baseDict[token][1]
-        with open(self.pathToWrite+"/"+self.finalIndexName+".txt", "r+") as index:
+        with open(self.pathToWrite + "/" + self.finalIndexName + ".txt", "r+") as index:
             index.seek(offset)
             data = index.read(size)  # if you only wanted to read 512 bytes, do .read(512)
             return (data)
@@ -215,12 +214,11 @@ class Indexer:
                     self.NumbersOfCapitals = self.numbersOfCapital + 1
                     population = apiDict[i]["population"]
                     if (((population) >= 1000 and (population) < 1000000)):
-                        population = str(float(population) / 1000) + "K" # 1,000
+                        population = str(float(population) / 1000) + "K"  # 1,000
                     elif ((population) >= 1000000 and (population) < 1000000000):
-                        population = str(float(population) / 1000000) + "M" # 1,000,000
+                        population = str(float(population) / 1000000) + "M"  # 1,000,000
                     elif ((population) >= 1000000000):
-                        population = str(float(population) / 1000000000) + "B" # 1,000,000,000
+                        population = str(float(population) / 1000000000) + "B"  # 1,000,000,000
                     self.citiesIndex[cityName].append(
                         (apiDict[i]["name"], apiDict[i]["currencies"][0]["code"], population))
             self.citiesIndex[cityName].append(detailsList)
-
