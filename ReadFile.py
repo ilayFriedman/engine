@@ -113,7 +113,7 @@ class ReadFile:
                 afterParse = self.makeStemList(afterParse)
             self.indexer.tokenList = afterParse
             self.indexer.add(title)
-            self.fileIndex[title] = [self.indexer.maxTF, len(self.indexer.tokenList), city, lang]
+            self.fileIndex[title] = [self.indexer.maxTF, len(self.indexer.tokenList), city, lang, len(afterParse)]
         self.textsList.clear()
 
     def readAllCities(self, file, subCity):  # make allCity list first
