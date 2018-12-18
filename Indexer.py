@@ -223,3 +223,4 @@ class Indexer:
                     self.citiesIndex[cityName].append(
                         (apiDict[i]["name"], apiDict[i]["currencies"][0]["code"], population))
             self.citiesIndex[cityName].append(detailsList)
+
