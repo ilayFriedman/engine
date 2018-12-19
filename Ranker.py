@@ -35,7 +35,9 @@ class Ranker:
             currRank = 0
             docLen = self.docIndex[doc][4]
             for word in query:
-                currDF = self.baseIndex[word][3]
+                if(word in self.baseIndex.keys()):
+                    currDF = self.baseIndex[word][3]
+                else: currDF = 0
                 if (doc in cWD[word]):
                     currCWD = cWD[word][doc]
                     currRank += self.bmCalc(counter[word], currCWD, docLen, currDF)
