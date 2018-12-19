@@ -21,6 +21,7 @@ class Indexer:
         self.numbersOfCapital = 0
 
     def add(self, fileName):
+        entitiesList={}
         currDict = defaultdict(list)
         # tokenSet = set(firstPlace)
         self.numCount = Counter(self.tokenList)
@@ -59,6 +60,8 @@ class Indexer:
                         currDict[token.lower()].append([fileName, self.numCount[token]])
                 else:
                     if (token.upper() in self.baseDict):
+                        if(token[0].isupper()):
+                            entitiesList[token.upper()] = self.numCount[token]
                         self.baseDict[token.lower()] = self.baseDict[token.upper()]
                         del self.baseDict[token.upper()]
                         self.baseDict[token.lower()][2] = self.baseDict[token.lower()][2] + self.numCount[token]
@@ -74,14 +77,17 @@ class Indexer:
                                 currDict[token.lower()].append([fileName, self.numCount[token]])
                         else:
                             currDict[token.lower()].append([fileName, self.numCount[token]])
-                    else:
+                    else:       ## new word !
                         if (token[0].islower() or token[0].isdigit() or token[1:].isdigit()):
                             self.baseDict[token.lower()] = [-1, -1, self.numCount[token], -1]
                             currDict[token.lower()].append([fileName, self.numCount[token]])
-                        elif (token[0].isupper() or token[0].isdigit() or token[1:].isdigit()):
+                        elif (token[0].isupper() or token[0].isdigit() or token[1:].isdigit()): ## big word
                             self.baseDict[token.upper()] = [-1, -1, self.numCount[token], -1]
                             currDict[token.upper()].append([fileName, self.numCount[token]])
+                            if (token[0].isupper()):
+                                entitiesList[token.upper()] = self.numCount[token]
         self.tmpDict.append(currDict)
+        return entitiesList
 
     def merge(self):
         result_dict = {}
