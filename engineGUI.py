@@ -266,8 +266,8 @@ class Toplevel1:
         dirWind.destroy()
 
     def createAll(self):
-        if(os.path.exists(self.Entry1.get()+"/finalIndexName.txt") and self.var1 == 0):
-            os.remove(self.Entry1.get() + "/finalIndexName.txt")
+        if(os.path.exists(self.Entry1.get()+"/finalIndex.txt") and self.var1 == 0):
+            os.remove(self.Entry1.get() + "/finalIndex.txt")
         if(os.path.exists(self.Entry1.get()+"/fileIndex.ujson") and self.var1 == 0):
             os.remove(self.Entry1.get() + "/fileIndex.ujson")
         if(os.path.exists(self.Entry1.get()+"/citiesIndex.ujson") and self.var1 == 0):
@@ -275,8 +275,8 @@ class Toplevel1:
         if(os.path.exists(self.Entry1.get()+"/baseDict.ujson") and self.var1 == 0):
             os.remove(self.Entry1.get() + "/baseDict.ujson")
 
-        if(os.path.exists(self.Entry1.get()+"/S_finalIndexName.txt") and self.var1 == 1):
-            os.remove(self.Entry1.get() + "/S_finalIndexName.txt")
+        if(os.path.exists(self.Entry1.get()+"/S_finalIndex.txt") and self.var1 == 1):
+            os.remove(self.Entry1.get() + "/S_finalIndex.txt")
         if(os.path.exists(self.Entry1.get()+"/S_fileIndex.ujson") and self.var1 == 1):
             os.remove(self.Entry1.get() + "/S_fileIndex.ujson")
         if(os.path.exists(self.Entry1.get()+"/S_citiesIndex.ujson") and self.var1 == 1):
@@ -285,12 +285,12 @@ class Toplevel1:
             os.remove(self.Entry1.get() + "/S_baseDict.ujson")
         if(self.makeIndex != None):
             if(self.var1.get() == 0):
-                os.remove(self.Entry1.get()+"/finalIndexName.txt")
+                os.remove(self.Entry1.get()+"/finalIndex.txt")
                 os.remove(self.Entry1.get()+"/fileIndex.ujson")
                 os.remove(self.Entry1.get()+"/citiesIndex.ujson")
                 os.remove(self.Entry1.get()+"/baseDict.ujson")
             elif self.var1.get() == 1:
-                os.remove(self.Entry1.get()+"/S_finalIndexName.txt")
+                os.remove(self.Entry1.get()+"/S_finalIndex.txt")
                 os.remove(self.Entry1.get()+"/S_fileIndex.ujson")
                 os.remove(self.Entry1.get()+"/S_citiesIndex.ujson")
                 os.remove(self.Entry1.get()+"/S_baseDict.ujson")
@@ -332,12 +332,12 @@ class Toplevel1:
     def clearAll(self):
         try:
             if(self.var1.get() == 0):
-                os.remove(self.Entry1.get()+"/finalIndexName.txt")
+                os.remove(self.Entry1.get()+"/finalIndex.txt")
                 os.remove(self.Entry1.get()+"/fileIndex.ujson")
                 os.remove(self.Entry1.get()+"/citiesIndex.ujson")
                 os.remove(self.Entry1.get()+"/baseDict.ujson")
             elif self.var1.get() == 1:
-                os.remove(self.Entry1.get()+"/S_finalIndexName.txt")
+                os.remove(self.Entry1.get()+"/S_finalIndex.txt")
                 os.remove(self.Entry1.get()+"/S_fileIndex.ujson")
                 os.remove(self.Entry1.get()+"/S_citiesIndex.ujson")
                 os.remove(self.Entry1.get()+"/S_baseDict.ujson")

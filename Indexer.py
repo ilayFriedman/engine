@@ -34,6 +34,7 @@ class Indexer:
         for token in self.tokenList:
             if (token == ''):
                 continue
+
             if (token in self.baseDict):
                 self.baseDict[token][2] = self.baseDict[token][2] + self.numCount[token]
                 if (token in currDict and currDict[token][(len(currDict[token])) - 1][0] == fileName):
@@ -41,6 +42,11 @@ class Indexer:
                         currDict[token][(len(currDict[token])) - 1][1]) + self.numCount[token]
                 else:
                     currDict[token].append([fileName, self.numCount[token]])
+                if (token[0].isupper()):
+                    if (token.upper() in entitiesList):
+                        entitiesList[token.upper()] += self.numCount[token]
+                    else:
+                        entitiesList[token.upper()] = self.numCount[token]
             else:
                 if (token.lower() in self.baseDict):
                     self.baseDict[token.lower()][2] = self.baseDict[token.lower()][2] + self.numCount[token]
@@ -61,22 +67,37 @@ class Indexer:
                 else:
                     if (token.upper() in self.baseDict):
                         if(token[0].isupper()):
-                            entitiesList[token.upper()] = self.numCount[token]
-                        self.baseDict[token.lower()] = self.baseDict[token.upper()]
-                        del self.baseDict[token.upper()]
-                        self.baseDict[token.lower()][2] = self.baseDict[token.lower()][2] + self.numCount[token]
-                        if (token.upper() in currDict):
-                            currDict[token.lower()] = currDict[token.upper()]
-                            del currDict[token.upper()]
-                            lastPair = (len(currDict[token.lower()])) - 1
-                            lastDoc = currDict[token.lower()][lastPair][0]
-                            if (lastDoc == fileName):
-                                currDict[token.lower()][lastPair][1] = int(currDict[token.lower()][lastPair][1]) + \
-                                                                       self.numCount[token]
+                            if(token.upper() in entitiesList):
+                                entitiesList[token.upper()] += self.numCount[token]
                             else:
-                                currDict[token.lower()].append([fileName, self.numCount[token]])
+                                entitiesList[token.upper()] = self.numCount[token]
+                            self.baseDict[token.upper()][2] = self.baseDict[token.upper()][2] + self.numCount[token]
+                            if (token.upper() in currDict):
+                                lastPair = (len(currDict[token.upper()])) - 1
+                                lastDoc = currDict[token.upper()][lastPair][0]
+                                if (lastDoc == fileName):
+                                    currDict[token.upper()][lastPair][1] = int(currDict[token.upper()][lastPair][1]) + \
+                                                                           self.numCount[token]
+                                else:
+                                    currDict[token.upper()].append([fileName, self.numCount[token]])
+                            else:
+                                currDict[token.upper()].append([fileName, self.numCount[token]])
                         else:
-                            currDict[token.lower()].append([fileName, self.numCount[token]])
+                            self.baseDict[token.lower()] = self.baseDict[token.upper()]
+                            del self.baseDict[token.upper()]
+                            self.baseDict[token.lower()][2] = self.baseDict[token.lower()][2] + self.numCount[token]
+                            if (token.upper() in currDict):
+                                currDict[token.lower()] = currDict[token.upper()]
+                                del currDict[token.upper()]
+                                lastPair = (len(currDict[token.lower()])) - 1
+                                lastDoc = currDict[token.lower()][lastPair][0]
+                                if (lastDoc == fileName):
+                                    currDict[token.lower()][lastPair][1] = int(currDict[token.lower()][lastPair][1]) + \
+                                                                           self.numCount[token]
+                                else:
+                                    currDict[token.lower()].append([fileName, self.numCount[token]])
+                            else:
+                                    currDict[token.lower()].append([fileName, self.numCount[token]])
                     else:       ## new word !
                         if (token[0].islower() or token[0].isdigit() or token[1:].isdigit()):
                             self.baseDict[token.lower()] = [-1, -1, self.numCount[token], -1]
