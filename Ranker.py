@@ -23,14 +23,15 @@ class Ranker:
         cWD = {}
         for word in query:
             data = self.readFromFile(word)
-            data = re.sub("[\[\]\"\']", "", data)
-            data = data.split(", ")
-            inDocList = {}
-            i = 0
-            while (i < (len(data) - 1)):
-                inDocList[data[i]] = data[i + 1]
-                i += 2
-            cWD[word] = inDocList
+            if(data != None):
+                data = re.sub("[\[\]\"\']", "", data)
+                data = data.split(", ")
+                inDocList = {}
+                i = 0
+                while (i < (len(data) - 1)):
+                    inDocList[data[i]] = data[i + 1]
+                    i += 2
+                cWD[word] = inDocList
         for doc in self.docIndex:
             currRank = 0
             docLen = self.docIndex[doc][4]
@@ -38,10 +39,11 @@ class Ranker:
                 if(word in self.baseIndex.keys()):
                     currDF = self.baseIndex[word][3]
                 else: currDF = 0
-                if (doc in cWD[word]):
-                    currCWD = cWD[word][doc]
-                    currRank += self.bmCalc(counter[word], currCWD, docLen, currDF)
-                resultDict[doc] = currRank
+                if(cWD[word] != None):
+                    if (doc in cWD[word]):
+                        currCWD = cWD[word][doc]
+                        currRank += self.bmCalc(counter[word], currCWD, docLen, currDF)
+                    resultDict[doc] = currRank
         bestRank = OrderedDict(sorted(resultDict.items(), key = itemgetter(1), reverse = True))
         return(bestRank)
 
@@ -50,12 +52,22 @@ class Ranker:
         b = 0.75
         res = ((k + 1) * float(cWD)) / (float(cWD) + (k * (1 - b + (b * (float(docLen) / float(self.avdl))))))
         res = res *float(cWQ)
-        res = res * math.log10((self.docNum + 1)/df)
+        if(df != 0):
+            res = res * math.log10((self.docNum + 1)/df)
         return res
 
     def readFromFile(self, token):
-        offset = self.baseIndex[token][0]
-        size = self.baseIndex[token][1]
+        if(token in self.baseIndex):
+            offset = self.baseIndex[token][0]
+            size = self.baseIndex[token][1]
+        elif(token.upper() in self.baseIndex):
+            offset = self.baseIndex[token.upper()][0]
+            size = self.baseIndex[token.upper()][1]
+        elif(token.lower() in self.baseIndex):
+            offset = self.baseIndex[token.lower()][0]
+            size = self.baseIndex[token.lower()][1]
+        else:
+            return None
         indexName = ""
         if (self.doStem):
             indexName = "S_finalIndex"

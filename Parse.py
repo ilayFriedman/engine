@@ -198,6 +198,7 @@ class Parse:
                 elif stringTextList[i].isalpha():
                     tokenList.append(stringTextList[i])
 
+
             i = i + 1
         return tokenList
 
