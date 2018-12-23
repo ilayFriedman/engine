@@ -8,20 +8,24 @@ from Ranker import Ranker
 
 
 class Searcher:
-    def __init__(self, stopWords, postPath, doStem, baseDict, fileIndex, citiesList=None):
+    def __init__(self, stopWords, postPath, doStem, baseDict, fileIndex, showEntities, doSemantics, citiesList=None):
         self.baseDic = baseDict
         self.fileIndex = fileIndex
         self.stopWords = stopWords
         self.citiesList = citiesList
-
         self.ranker = Ranker(self.baseDic, self.fileIndex, postPath, doStem)
         self.stopWords = stopWords
         self.citiesList = citiesList
         self.showEntities = showEntities
+        self.doSemantics = doSemantics
 
     def singleQueryCalc(self, query):
         parseQuery = Parse(self.stopWords).parseText(query)
         # self.ranker.query = parseQuery
+        # if(self.doSemantics):
+        #     semanticQuery = []
+        #     for w in parseQuery:
+
         resList = self.ranker.calculateRate(parseQuery)
         tmpDict = {}
         theRanking = []
@@ -38,7 +42,7 @@ class Searcher:
             x = itertools.islice(resList.items(), 0, 50)
             for i in x:
                 theRanking.append(i)
-        #print(theRanking)
+        # print(theRanking)
         if (self.showEntities):
             print(self.addEntities(theRanking))
             return self.addEntities(theRanking)
@@ -96,19 +100,19 @@ class Searcher:
             entitiesToShow = []
             ansDict = {}
             entitiesDict = self.fileIndex[tuple[0]][5]
-            #print(entitiesDict)
+            # print(entitiesDict)
             for word in entitiesDict:
                 if (word in self.baseDic):
                     ansDict[word] = entitiesDict[word]
-            #print("ANS: ", ansDict)
-            #x = itertools.islice(ansDict.items(), 0, 5)
-            #i = sorted(ansDict.values(),reverse=True)[0]
+            # print("ANS: ", ansDict)
+            # x = itertools.islice(ansDict.items(), 0, 5)
+            # i = sorted(ansDict.values(),reverse=True)[0]
 
             x = sorted(ansDict.items(), key=itemgetter(1), reverse=True)
             i = self.fileIndex[tuple[0]][4]
             for e in x:
-                entitiesToShow.append((e[0], e[1]/i))
-            #print(entitiesToShow)
+                entitiesToShow.append((e[0], e[1] / i))
+            # print(entitiesToShow)
             result[tuple] = entitiesToShow
         return result
-            #print("FINAL: ", result)
+        # print("FINAL: ", result)
