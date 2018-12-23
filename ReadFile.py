@@ -38,7 +38,7 @@ class ReadFile:
         self.citiesList = set(self.citiesList)
         stop = timeit.default_timer()  ## CLEAR PRINT!
         print("~### CITY READ ###~ : ", stop - self.start, "seconds")  ## CLEAR PRINT!
-
+        print(self.citiesList)
         for root, dirs, files in os.walk(self.pathToRead):
             for file in files:
                 with open(os.path.join(root, file), "r") as auto:
@@ -122,6 +122,10 @@ class ReadFile:
             if (subCity != None and subCity in line and '><' not in line):
                 subCityValue = (line[line.index('>') + 1:-(len(line) - line.index(' ', 11))].strip())
             if (subCityValue != ""):
+                if(subCityValue[0].isalpha()==False):
+                    subCityValue=subCityValue[1:]
+                if(subCityValue[len(subCityValue)-1].isalpha()==False):
+                    subCityValue = subCityValue[:-1]
                 self.citiesList.append(subCityValue)
                 subCityValue = ""
 

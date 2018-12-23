@@ -7,24 +7,12 @@ from Ranker import Ranker
 
 
 class Searcher:
-    def __init__(self, stopWords, postPath, doStem, citiesList=None):
-        if (doStem):
-            with open(postPath + "/S_baseDict.ujson", "r+") as file:
-                self.baseDic = ujson.load(file)
-                file.close()
-            with open(postPath + "/S_fileIndex.ujson", "r+") as file1:
-                self.fileIndex = ujson.load(file1)
-                file1.close()
-        else:
-            with open(postPath + "/baseDict.ujson", "r+") as file:
-                self.baseDic = ujson.load(file)
-                file.close()
-            with open(postPath + "/fileIndex.ujson", "r+") as file1:
-                self.fileIndex = ujson.load(file1)
-                file1.close()
-        self.ranker = Ranker(self.baseDic, self.fileIndex, postPath, doStem)
+    def __init__(self, stopWords, postPath, doStem,baseDict,fileIndex, citiesList=None):
+        self.baseDic = baseDict
+        self.fileIndex = fileIndex
         self.stopWords = stopWords
         self.citiesList = citiesList
+        self.ranker = Ranker(self.baseDic, self.fileIndex, postPath, doStem)
 
     def singleQueryCalc(self, query):
         parseQuery = Parse(self.stopWords).parseText(query)
