@@ -81,7 +81,7 @@ class Toplevel1:
         self.style.map('.',background=
             [('selected', _compcolor), ('active',_ana2color)])
 
-        top.geometry("733x488+413+174")
+        top.geometry("933x488+413+174")
         top.title("Engine!")
         top.configure(background="#d9d9d9")
 
@@ -313,6 +313,11 @@ class Toplevel1:
         self.Labelframe_results.place(relx=0.505, rely=0.123, relheight=0.441
                 , relwidth=0.464)
 
+
+
+        self.Labelframe_results = tk.LabelFrame(top)
+        self.Labelframe_results.place(relx=0.505, rely=0.123, relheight=0.441
+                                      , relwidth=0.464)
         self.Labelframe_results.configure(relief='groove')
         self.Labelframe_results.configure(foreground="black")
         self.Labelframe_results.configure(text='''Results:''')
@@ -320,6 +325,18 @@ class Toplevel1:
         self.Labelframe_results.configure(highlightbackground="#d9d9d9")
         self.Labelframe_results.configure(highlightcolor="black")
         self.Labelframe_results.configure(width=340)
+
+        lb_header = ['No','File Name', 'Relevance','Entities']
+        self.tree = ttk.Treeview(columns=lb_header, show="headings")
+        self.tree.grid(in_=self.Labelframe_results)
+        self.tree.place_configure(relx=0.51,  rely=0.220,height=170)
+        i=0
+        for col in lb_header:
+            self.tree.heading(col, text=col.title())
+        self.tree.column('No', width=25)
+        self.tree.column('File Name', width=90)
+        self.tree.column('Relevance', width=90)
+        self.tree.column('Entities', width=210)
 
         self.saveResultsButton = ttk.Button(self.Labelframe_results)
         self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
@@ -540,12 +557,23 @@ class Toplevel1:
         citiesSelectedList=[]
         for i in self.citiesList.curselection():
             citiesSelectedList.append(self.citiesList.get(i))
-        print (citiesSelectedList)
+        return(citiesSelectedList)
 
     def submitSingleQuery(self):
+        self.tree.delete(*self.tree.get_children())
+        i = 1
         if(self.onlyCitiesRes.get() == 1):
             self.loaded.citiesList = self.selectedItemInCitiesList()
-        print(self.loaded.singleQueryCalc(self.singleQueryTextField.get()))
+        if(self.entitiesCheckBoxV.get() == 1):
+            self.loaded.showEntities = self.entitiesCheckBoxV.get()
+            dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
+            for item in dict:
+                self.tree.insert('', 'end', values=(i, item[0], item[1],dict[item]))
+                i = i + 1
+        else:
+            for item in self.loaded.singleQueryCalc(self.singleQueryTextField.get()):
+                self.tree.insert('', 'end', values=(i, item[0],item[1]))
+                i=i+1
 
 
 if __name__ == '__main__':
