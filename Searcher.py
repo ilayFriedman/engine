@@ -31,8 +31,9 @@ class Searcher:
                 semanticQuery.append(w)
                 if(w.lower() in self.similarityDict):
                     for sim in self.similarityDict[w.lower()]:
-                        semanticQuery.append(sim[0])
-            #print(semanticQuery)
+                        if(sim[0] not in semanticQuery):
+                            semanticQuery.append(sim[0])
+            print(semanticQuery)
             resList = self.ranker.calculateRate(semanticQuery)
         else:
             resList = self.ranker.calculateRate(parseQuery)
