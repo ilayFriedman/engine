@@ -29,7 +29,7 @@ class Searcher:
             semanticQuery = []
             for w in parseQuery:
                 semanticQuery.append(w)
-                if(w in self.similarityDict):
+                if(w.lower() in self.similarityDict):
                     for sim in self.similarityDict[w.lower()]:
                         semanticQuery.append(sim[0])
             #print(semanticQuery)
