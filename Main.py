@@ -2,10 +2,10 @@ import timeit
 from collections import defaultdict
 
 import ujson as ujson
-from gensim.models import KeyedVectors
+#from gensim.models import KeyedVectors
 
 from Searcher import Searcher
-import gensim.models
+#import gensim.models
 
 citiesfile = open("post/citiesIndex.ujson", "r+")
 baseFile = open("post/baseDict.ujson", "r+")
@@ -18,7 +18,7 @@ baseFile.close()
 fileFile.close()
 
 searcher = Searcher("/stop_words.txt", "post",False,ReadBaseDict,ReadFileIndex,
-                    False, True)
+                    True, True)
 q = searcher.singleQueryCalc("car")
 #q = searcher.multiQueryCalc("Qtest")
 
@@ -42,7 +42,7 @@ q = searcher.singleQueryCalc("car")
 #     print(x[0],x[1])
 
 
-# with open("ppdb-2.0-m-lexical" , "r+") as file:
+# with open("ppdb-2.0-s-all" , "r+") as file:
 #     similarityDict = defaultdict(list)
 #     for line in file:
 #         curr = line.split(" ||| ")
@@ -50,7 +50,8 @@ q = searcher.singleQueryCalc("car")
 #         otherWord = curr[2]
 #         score = curr[3].split(" ")[0].split("=")[1]
 #         similarityDict[word].append((otherWord,score))
-#     with open("simDict.ujson", "w+") as tmpFileDict:
+#     with open("simDictS.ujson", "w+") as tmpFileDict:
 #         ujson.dump(similarityDict, tmpFileDict)
+#         tmpFileDict.close()
 #     print(similarityDict["car"])
     #print (similarityDict)
