@@ -39,7 +39,7 @@ class Ranker:
                 if(word in self.baseIndex.keys()):
                     currDF = self.baseIndex[word][3]
                 else: currDF = 0
-                if(cWD[word] != None):
+                if(word in cWD and cWD[word] != None):
                     if (doc in cWD[word]):
                         currCWD = cWD[word][doc]
                         currRank += self.bmCalc(counter[word], currCWD, docLen, currDF)

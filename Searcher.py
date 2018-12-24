@@ -18,15 +18,23 @@ class Searcher:
         self.citiesList = citiesList
         self.showEntities = showEntities
         self.doSemantics = doSemantics
+        with open("simDict.ujson", "r+") as Jfile:
+            self.similarityDict = ujson.load(Jfile)
+        Jfile.close()
 
     def singleQueryCalc(self, query):
         parseQuery = Parse(self.stopWords).parseText(query)
-        # self.ranker.query = parseQuery
-        # if(self.doSemantics):
-        #     semanticQuery = []
-        #     for w in parseQuery:
-
-        resList = self.ranker.calculateRate(parseQuery)
+        self.ranker.query = parseQuery
+        if(self.doSemantics):
+            semanticQuery = []
+            for w in parseQuery:
+                semanticQuery.append(w)
+                for sim in self.similarityDict[w]:
+                    semanticQuery.append(sim[0])
+            print(semanticQuery)
+            resList = self.ranker.calculateRate(semanticQuery)
+        else:
+            resList = self.ranker.calculateRate(parseQuery)
         tmpDict = {}
         theRanking = []
         if (self.citiesList != None):
@@ -70,7 +78,16 @@ class Searcher:
             querysFile.close()
         for q in querysDict:
             parseQuery = Parse(self.stopWords).parseText(querysDict[q])
-            resList = self.ranker.calculateRate(parseQuery)
+            if (self.doSemantics):
+                semanticQuery = []
+                for w in parseQuery:
+                    semanticQuery.append(w)
+                    for sim in self.similarityDict[w]:
+                        semanticQuery.append(sim[0])
+                print(semanticQuery)
+                resList = self.ranker.calculateRate(semanticQuery)
+            else:
+                resList = self.ranker.calculateRate(parseQuery)
             tmpDict = {}
             theRanking = []
             if (self.citiesList != None):
