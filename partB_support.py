@@ -43,6 +43,7 @@ def set_Tk_var():
     citiesListBox = tk.IntVar()
     global doStemmingV
     doStemmingV = tk.IntVar()
+    global StemmingCheckBox
 
 def makeTry():
     print('partB_support.makeTry')
