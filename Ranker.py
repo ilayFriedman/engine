@@ -43,7 +43,8 @@ class Ranker:
                     if (doc in cWD[word]):
                         currCWD = cWD[word][doc]
                         currRank += self.bmCalc(counter[word], currCWD, docLen, currDF)
-                    resultDict[doc] = currRank
+                    if(currRank != 0):
+                        resultDict[doc] = currRank
         bestRank = OrderedDict(sorted(resultDict.items(), key = itemgetter(1), reverse = True))
         return(bestRank)
 

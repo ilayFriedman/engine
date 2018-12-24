@@ -18,8 +18,8 @@ baseFile.close()
 fileFile.close()
 
 searcher = Searcher("/stop_words.txt", "post",False,ReadBaseDict,ReadFileIndex,
-                    True, True)
-q = searcher.singleQueryCalc("car")
+                    True, False)
+q = searcher.singleQueryCalc("automobile")
 #q = searcher.multiQueryCalc("Qtest")
 
 

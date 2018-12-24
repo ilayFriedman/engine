@@ -35,6 +35,7 @@ class Searcher:
             resList = self.ranker.calculateRate(semanticQuery)
         else:
             resList = self.ranker.calculateRate(parseQuery)
+
         tmpDict = {}
         theRanking = []
         if (self.citiesList != None):
