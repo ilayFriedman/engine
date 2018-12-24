@@ -64,7 +64,7 @@ class Searcher:
     def multiQueryCalc(self, queryFile):
         querysDict = {}
         resultDict = {}
-        with open(queryFile + ".txt", "r+") as querysFile:
+        with open(queryFile, "r+") as querysFile:
             inPart = False
             queryText = ""
             queryNum = ""

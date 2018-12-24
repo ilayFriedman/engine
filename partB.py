@@ -10,7 +10,7 @@ import sys
 import timeit
 import ujson
 from tkinter import messagebox
-from tkinter.filedialog import askdirectory
+from tkinter.filedialog import askdirectory, askopenfile
 
 from ReadFile import ReadFile
 from Searcher import Searcher
@@ -230,7 +230,7 @@ class Toplevel1:
 
 
         self.multiQueryTextField = ttk.Entry(self.Labelframe_queryField)
-        self.multiQueryTextField.place(relx=0.014, rely=0.343, relheight=0.12
+        self.multiQueryTextField.place(relx=0.014, rely=0.443, relheight=0.12
                 , relwidth=0.284, bordermode='ignore')
         self.multiQueryTextField.configure(textvariable=partB_support.multiQueryTextField)
         self.multiQueryTextField.configure(width=196)
@@ -238,24 +238,33 @@ class Toplevel1:
         self.multiQueryTextField.configure(cursor="ibeam")
         self.multiQueryTextField.configure(state='disabled')
 
-
+        self.orLable = ttk.Label(self.Labelframe_queryField)
+        self.orLable.place(relx=0.01, rely=0.300
+                , bordermode='ignore')
+        self.orLable.configure(background="#d9d9d9")
+        self.orLable.configure(foreground="#000000")
+        self.orLable.configure(font=font11)
+        self.orLable.configure(relief='flat')
+        self.orLable.configure(text='''~or choose queries file:~''')
 
 
         self.browseMultiQueryButton = ttk.Button(self.Labelframe_queryField)
-        self.browseMultiQueryButton.place(relx=0.319, rely=0.343, height=25
-                , width=117, bordermode='ignore')
+        self.browseMultiQueryButton.place(relx=0.319, rely=0.443, height=25
+                , width=97, bordermode='ignore')
         self.browseMultiQueryButton.configure(takefocus="")
-        self.browseMultiQueryButton.configure(text='''browse Queries file''')
+        self.browseMultiQueryButton.configure(text='''browse file''')
         self.browseMultiQueryButton.configure(width=117)
         self.browseMultiQueryButton.configure(state='disabled')
+        self.browseMultiQueryButton.configure(command=self.queryFileBrowse)
 
         self.multiQuerySeachButton = ttk.Button(self.Labelframe_queryField)
-        self.multiQuerySeachButton.place(relx=0.507, rely=0.343, height=25
-                , width=108, bordermode='ignore')
+        self.multiQuerySeachButton.place(relx=0.430, rely=0.443, height=25
+                , width=131, bordermode='ignore')
         self.multiQuerySeachButton.configure(takefocus="")
-        self.multiQuerySeachButton.configure(text='''Search Queries''')
+        self.multiQuerySeachButton.configure(text='''Search on Queries file''')
         self.multiQuerySeachButton.configure(width=108)
         self.multiQuerySeachButton.configure(state='disabled')
+        self.multiQuerySeachButton.configure(command=self.multiQueries)
 
         self.CitiesLable = ttk.Label(self.Labelframe_queryField)
         self.CitiesLable.place(relx=0.725, rely=0.114, height=24, width=85
@@ -393,7 +402,7 @@ class Toplevel1:
             messagebox.showerror('oops!', 'Please insert a valid source path!')
         else:
             if(os.path.exists(self.postingPathTextField.get()+"/finalIndex.txt") == False or os.path.exists(self.postingPathTextField.get() + "/citiesIndex.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/baseDict.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/fileIndex.ujson") == False ):
-                messagebox.showerror('oops!', 'missing files in the path that you gave \n enter a new one!')
+                messagebox.showerror('oops!', 'Cannot find files to load \nmake sure you generated them first!\n(or write another path)')
             else:
                 self.allTermsButton.configure(state='normal')
                 self.singleQuerySearchButton.configure(state='normal')
@@ -411,7 +420,17 @@ class Toplevel1:
                 self.loaded = Searcher(self.corpusPathTextField.get()+"/stop_words.txt"
                                        ,self.postingPathTextField.get(),self.doStemmingV,self.ReadBaseDict,self.ReadFileIndex,self.entitiesCheckBoxV,self.semanticCheckBoxV)
 
+    def resetQueryAera(self):
+        self.tree.delete(*self.tree.get_children())
+        self.singleQueryTextField.delete(0, 'end')
+        self.multiQueryTextField.delete(0, 'end')
+        self.citiesList.delete(0,'end')
+        self.entitiesCheckBoxV.set(0)
+        self.onlyCitiesRes.set(0)
+        self.semanticCheckBoxV.set(0)
+
     def loadPostingAndDict(self):
+        self.resetQueryAera()
         if (self.doStemmingV.get() == 0):
             citiesfile = open(self.postingPathTextField.get() + "/citiesIndex.ujson", "r+")
             baseFile = open(self.postingPathTextField.get() + "/baseDict.ujson", "r+")
@@ -442,6 +461,7 @@ class Toplevel1:
         self.semanticCheckBox.configure(state='disabled')
         self.entitiesCheckBox.configure(state='disabled')
         self.citiesList.delete(0, 'end')
+        self.resetQueryAera()
         override=False
         if(self.notEmptyCheck()):
             start = timeit.default_timer()
@@ -486,7 +506,7 @@ class Toplevel1:
                 string = "~### FINISH ###~ :\n" + str(stop - start) + " seconds takes to index everything.\n" + \
                          str(engineReadFile.textCount) + " files indexes!\n" + str(
                     len(engineReadFile.indexer.baseDict.keys())) + " terms is created!\n\n" + \
-                    "The index saved in "+str(self.postingPathTextField.get())
+                    "The index saved in "+str(self.postingPathTextField.get()) + "\n =For use Query Field : click on Load button="
                 if(override):
                     string = "^^^^^^ The previous index was deleted ^^^^^^\n\n\n" + string
                 messagebox.showinfo('Info about Creation', string)
@@ -509,7 +529,6 @@ class Toplevel1:
             i=i+1
     def resetAll(self):
         try:
-
             if(self.doStemmingVwhenClicked.get() == 0):
                 os.remove(self.postingPathTextField.get()+"/finalIndex.txt")
                 os.remove(self.postingPathTextField.get()+"/fileIndex.ujson")
@@ -536,6 +555,7 @@ class Toplevel1:
             self.corpusPathTextField.delete(0,'end')
             self.doStemmingV.set(0)
             self.citiesList.delete(0,'end')
+            self.tree.delete(*self.tree.get_children())
             messagebox.showinfo("All Reset!",string)
         except:
             messagebox.showerror('oops!', 'Something worng!\n Check if the files is not already deleted! ')
@@ -562,8 +582,14 @@ class Toplevel1:
     def submitSingleQuery(self):
         self.tree.delete(*self.tree.get_children())
         i = 1
+        if(self.semanticCheckBoxV.get() == 1):
+            self.loaded.doSemantics = 1
+        else:
+            self.loaded.doSemantics = 0
         if(self.onlyCitiesRes.get() == 1):
             self.loaded.citiesList = self.selectedItemInCitiesList()
+        else:
+            self.loaded.citiesList =None
         if(self.entitiesCheckBoxV.get() == 1):
             self.loaded.showEntities = self.entitiesCheckBoxV.get()
             dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
@@ -575,7 +601,39 @@ class Toplevel1:
                 self.tree.insert('', 'end', values=(i, item[0],item[1]))
                 i=i+1
 
+    def queryFileBrowse(self):
+        dirWind = tk.Tk()
+        dirWind.withdraw()
+        path = askopenfile()
+        path = path.name
+        if(len(str(self.multiQueryTextField.get())) != 0):
+            self.multiQueryTextField.delete(0, 'end')
+        if(path != None):
+            self.multiQueryTextField.insert(0, str(path))
+        dirWind.destroy()
 
+    def multiQueries(self):
+        self.tree.delete(*self.tree.get_children())
+        i = 1
+        if (self.semanticCheckBoxV.get() == 1):
+            self.loaded.doSemantics = 1
+        else:
+            self.loaded.doSemantics = 0
+        if (self.onlyCitiesRes.get() == 1):
+            self.loaded.citiesList = self.selectedItemInCitiesList()
+        else:
+            self.loaded.citiesList = None
+        if (self.entitiesCheckBoxV.get() == 1):
+            self.loaded.showEntities = self.entitiesCheckBoxV.get()
+            # dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
+            # for item in dict:
+            #     # self.tree.insert('', 'end', values=(i, item[0], item[1], dict[item]))
+            #     i = i + 1
+            print ("shitt")
+        else:
+            for item in self.loaded.multiQueryCalc(self.multiQueryTextField.get()):
+                self.tree.insert('', 'end', values=(i, item[0], item[1]))
+                i = i + 1
 if __name__ == '__main__':
     vp_start_gui()
 
