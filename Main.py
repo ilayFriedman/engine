@@ -41,7 +41,7 @@ q = searcher.singleQueryCalc("automobile")
 # for x in ms:
 #     print(x[0],x[1])
 
-
+#
 # with open("ppdb-2.0-s-all" , "r+") as file:
 #     similarityDict = defaultdict(list)
 #     for line in file:
@@ -50,8 +50,8 @@ q = searcher.singleQueryCalc("automobile")
 #         otherWord = curr[2]
 #         score = curr[3].split(" ")[0].split("=")[1]
 #         similarityDict[word].append((otherWord,score))
-#     with open("simDictS.ujson", "w+") as tmpFileDict:
+#     with open("simDictS.ujson", "w+") as tmpFileDict: #change to your favorite type of file
 #         ujson.dump(similarityDict, tmpFileDict)
 #         tmpFileDict.close()
 #     print(similarityDict["car"])
-    #print (similarityDict)
+#     print (similarityDict)
