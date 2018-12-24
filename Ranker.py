@@ -69,7 +69,7 @@ class Ranker:
         else:
             return None
         indexName = ""
-        if (self.doStem):
+        if (self.doStem == 1):
             indexName = "S_finalIndex"
         else:
             indexName = "finalIndex"

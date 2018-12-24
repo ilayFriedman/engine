@@ -25,7 +25,7 @@ class Searcher:
     def singleQueryCalc(self, query):
         parseQuery = Parse(self.stopWords).parseText(query)
         self.ranker.query = parseQuery
-        if(self.doSemantics):
+        if(self.doSemantics == 1):
             semanticQuery = []
             for w in parseQuery:
                 semanticQuery.append(w)
@@ -51,7 +51,7 @@ class Searcher:
             for i in x:
                 theRanking.append(i)
         # print(theRanking)
-        if (self.showEntities):
+        if (self.showEntities == 1):
             print(self.addEntities(theRanking))
             return self.addEntities(theRanking)
         else:
@@ -78,7 +78,7 @@ class Searcher:
             querysFile.close()
         for q in querysDict:
             parseQuery = Parse(self.stopWords).parseText(querysDict[q])
-            if (self.doSemantics):
+            if (self.doSemantics == 1):
                 semanticQuery = []
                 for w in parseQuery:
                     semanticQuery.append(w)
@@ -103,7 +103,7 @@ class Searcher:
                 x = itertools.islice(resList.items(), 0, 50)
                 for doc in x:
                     theRanking.append(doc)
-            if (self.showEntities):
+            if (self.showEntities == 1):
                 resultDict[q] = self.addEntities(theRanking)
             else:
                 resultDict[q] = theRanking
