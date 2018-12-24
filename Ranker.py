@@ -73,7 +73,7 @@ class Ranker:
             indexName = "S_finalIndex"
         else:
             indexName = "finalIndex"
-        with open(self.postPath + "/" + indexName + ".txt", "r+") as index:
+        with open(self.postPath + "/"+indexName + ".txt", "r+") as index:
             index.seek(offset)
             data = index.read(size)
             return (data)

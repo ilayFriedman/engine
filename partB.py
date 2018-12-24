@@ -217,7 +217,7 @@ class Toplevel1:
         self.singleQuerySearchButton.configure(text='''Search Query''')
         self.singleQuerySearchButton.configure(width=110)
         self.singleQuerySearchButton.configure(state='disabled')
-
+        self.singleQuerySearchButton.configure(command=self.submitSingleQuery)
 
         self.singleQueryTextField = ttk.Entry(self.Labelframe_queryField)
         self.singleQueryTextField.place(relx=0.014, rely=0.171, relheight=0.12
@@ -271,15 +271,18 @@ class Toplevel1:
         self.lab66_tCh84 = ttk.Checkbutton(self.Labelframe_queryField)
         self.lab66_tCh84.place(relx=0.014, rely=0.686, relwidth=0.322
                 , relheight=0.0, height=21, bordermode='ignore')
-        self.lab66_tCh84.configure(variable=partB_support.citiesOnlyResV)
         self.lab66_tCh84.configure(takefocus="")
         self.lab66_tCh84.configure(text='''Show results only from selected Cities''')
         self.lab66_tCh84.configure(state='disabled')
+        self.onlyCitiesRes = tk.IntVar()
+        self.lab66_tCh84.configure(variable=self.onlyCitiesRes)
+
 
         self.semanticCheckBox = ttk.Checkbutton(self.Labelframe_queryField)
         self.semanticCheckBox.place(relx=0.014, rely=0.571, relwidth=0.322
                 , relheight=0.0, height=21, bordermode='ignore')
-        self.semanticCheckBox.configure(variable=partB_support.semanticV)
+        self.semanticCheckBoxV = tk.IntVar()
+        self.semanticCheckBox.configure(variable=self.semanticCheckBoxV)
         self.semanticCheckBox.configure(takefocus="")
         self.semanticCheckBox.configure(text='''Semantic Search?''')
         self.semanticCheckBox.configure(state='disabled')
@@ -287,7 +290,10 @@ class Toplevel1:
         self.entitiesCheckBox = ttk.Checkbutton(self.Labelframe_queryField)
         self.entitiesCheckBox.place(relx=0.014, rely=0.8, relwidth=0.262
                 , relheight=0.0, height=21, bordermode='ignore')
-        self.entitiesCheckBox.configure(variable=partB_support.entitiesResV)
+        # self.entitiesCheckBox.configure(variable=partB_support.entitiesResV)
+        self.entitiesCheckBoxV = tk.IntVar()
+        self.entitiesCheckBox.configure(variable=self.entitiesCheckBoxV)
+
         self.entitiesCheckBox.configure(takefocus="")
         self.entitiesCheckBox.configure(text='''Show entitieses in results''')
         self.entitiesCheckBox.configure(width=181)
@@ -306,6 +312,7 @@ class Toplevel1:
         self.Labelframe_results = tk.LabelFrame(top)
         self.Labelframe_results.place(relx=0.505, rely=0.123, relheight=0.441
                 , relwidth=0.464)
+
         self.Labelframe_results.configure(relief='groove')
         self.Labelframe_results.configure(foreground="black")
         self.Labelframe_results.configure(text='''Results:''')
@@ -349,7 +356,7 @@ class Toplevel1:
         dirWind.withdraw()
         path = askdirectory()
         if(len(str(self.corpusPathTextField.get())) != 0):
-            self.corpusPathTextField.insert(0,"")
+            self.corpusPathTextField.delete(0, 'end')
         self.corpusPathTextField.insert(0, str(path))
         dirWind.destroy()
 
@@ -383,8 +390,9 @@ class Toplevel1:
                 self.loadPostingAndDict()
                 self.addCities()
                 self.loadedLable.configure(foreground="#000000")
+
                 self.loaded = Searcher(self.corpusPathTextField.get()+"/stop_words.txt"
-                                       ,self.postingPathTextField,self.doStemmingV,self.ReadBaseDict,self.ReadFileIndex)
+                                       ,self.postingPathTextField.get(),self.doStemmingV,self.ReadBaseDict,self.ReadFileIndex,self.entitiesCheckBoxV,self.semanticCheckBoxV)
 
     def loadPostingAndDict(self):
         if (self.doStemmingV.get() == 0):
@@ -402,6 +410,8 @@ class Toplevel1:
         citiesfile.close()
         baseFile.close()
         fileFile.close()
+
+        self.doStemmingVwhenClicked = self.doStemmingV
 
     def generateIndex(self):
         self.loadedLable.configure(foreground="#d9d9d9")
@@ -469,24 +479,6 @@ class Toplevel1:
                     shutil.move(self.postingPathTextField.get() + "/tempDir/" + f, self.postingPathTextField.get())
                 os.rmdir(self.postingPathTextField.get() + "/tempDir")
 
-                # self.saveResultsButton.configure(state='normal')
-                #self.allTermsButton.configure(state='normal')
-                # self.singleQuerySearchButton.configure(state='normal')
-                # self.singleQueryTextField.configure(state='normal')
-                # self.multiQueryTextField.configure(state='normal')
-                # self.browseMultiQueryButton.configure(state='normal')
-                # self.multiQuerySeachButton.configure(state='normal')
-                # self.lab66_tCh84.configure(state='normal')
-                # self.semanticCheckBox.configure(state='normal')
-                # self.entitiesCheckBox.configure(state='normal')
-                # self.generateIndexButton.configure(state='disabled')
-                # self.corpusPathTextField.configure(state='disabled')
-                # self.postingPathTextField.configure(state='disabled')
-                # self.browsePostingButton.configure(state='disabled')
-                # self.browseCorpusButton.configure(state='disabled')
-                # self.StemmingCheckBox.configure(state='disabled')
-                # self.addCities()
-
         else:
             messagebox.showinfo('oops!', 'To generate index you most 2 valid paths \n put valid ones!')
     def notEmptyCheck(self):
@@ -500,16 +492,19 @@ class Toplevel1:
             i=i+1
     def resetAll(self):
         try:
-            if(self.doStemmingV.get() == 0):
+
+            if(self.doStemmingVwhenClicked.get() == 0):
                 os.remove(self.postingPathTextField.get()+"/finalIndex.txt")
                 os.remove(self.postingPathTextField.get()+"/fileIndex.ujson")
                 os.remove(self.postingPathTextField.get()+"/citiesIndex.ujson")
                 os.remove(self.postingPathTextField.get()+"/baseDict.ujson")
-            elif (self.doStemmingV.get() == 1):
+                string = "*NON-STEMMING* Index Files deleted!\nEverything reset"
+            elif (self.doStemmingVwhenClicked.get() == 1):
                 os.remove(self.postingPathTextField.get()+"/S_finalIndex.txt")
                 os.remove(self.postingPathTextField.get()+"/S_fileIndex.ujson")
                 os.remove(self.postingPathTextField.get()+"/S_citiesIndex.ujson")
                 os.remove(self.postingPathTextField.get()+"/S_baseDict.ujson")
+                string = "*STEMMING* Index Files deleted!\nEverything reset"
             self.saveResultsButton.configure(state='disabled')
             self.allTermsButton.configure(state='disabled')
             self.singleQuerySearchButton.configure(state='disabled')
@@ -520,25 +515,15 @@ class Toplevel1:
             self.lab66_tCh84.configure(state='disabled')
             self.semanticCheckBox.configure(state='disabled')
             self.entitiesCheckBox.configure(state='disabled')
-            self.generateIndexButton.configure(state='normal')
-            self.corpusPathTextField.configure(state='normal')
-            self.postingPathTextField.configure(state='normal')
-            self.browsePostingButton.configure(state='normal')
-            self.browseCorpusButton.configure(state='normal')
-            self.StemmingCheckBox.configure(state='normal')
-            self.engineReadFile=None
             self.postingPathTextField.delete(0,'end')
             self.corpusPathTextField.delete(0,'end')
             self.doStemmingV.set(0)
             self.citiesList.delete(0,'end')
-            messagebox.showinfo('All reset!', 'Files deleted! Everything reset ')
+            messagebox.showinfo("All Reset!",string)
         except:
-            messagebox.showerror('oops!', 'Something worng!\n Check if the files is no already deleted! ')
+            messagebox.showerror('oops!', 'Something worng!\n Check if the files is not already deleted! ')
 
     def showDict(self):
-        if (self.engineReadFile == None):
-            messagebox.showerror('oops!', 'please Run in valid adress')
-        else:
             win = tk.Toplevel()
             win.geometry("200x220")
             win.title("Terms")
@@ -546,11 +531,22 @@ class Toplevel1:
             scrollbar.pack(side='right', fill='y')
 
             mylist = tk.Listbox(win, yscrollcommand=scrollbar.set,width=200)
-            for term in sorted(self.engineReadFile.indexer.baseDict,key=str.casefold):
-                mylist.insert(tk.END, (str(term) + " : " + str(self.engineReadFile.indexer.baseDict[term][2]) + "\n"))
+            for term in sorted(self.ReadBaseDict,key=str.casefold):
+                mylist.insert(tk.END, (str(term) + " : " + str(self.ReadBaseDict[term][2]) + "\n"))
 
             mylist.pack(side=tk.LEFT, fill=tk.BOTH)
             scrollbar.config(command=mylist.yview)
+    def selectedItemInCitiesList(self):
+        citiesSelectedList=[]
+        for i in self.citiesList.curselection():
+            citiesSelectedList.append(self.citiesList.get(i))
+        print (citiesSelectedList)
+
+    def submitSingleQuery(self):
+        if(self.onlyCitiesRes.get() == 1):
+            self.loaded.citiesList = self.selectedItemInCitiesList()
+        print(self.loaded.singleQueryCalc(self.singleQueryTextField.get()))
+
 
 if __name__ == '__main__':
     vp_start_gui()
