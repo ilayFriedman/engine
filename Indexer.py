@@ -235,7 +235,8 @@ class Indexer:
                 detailsList = str(self.readFromFile(city.upper()))
             elif (city.lower() in self.baseDict):
                 detailsList = str(self.readFromFile(city.lower()))
-            cityName = city[0] + city[1:].lower()
+            if(len(city) > 1):
+                cityName = city[0] + city[1:].lower()
             for i in range(0, len(apiDict)):
                 if (cityName in apiDict[i]["capital"]):
                     self.NumbersOfCapitals = self.numbersOfCapital + 1

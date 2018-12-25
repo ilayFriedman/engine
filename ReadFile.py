@@ -45,7 +45,7 @@ class ReadFile:
                     auto.seek(0)
                     self.breakToParts(auto, "<TEXT>", "</TEXT>", "<DOCNO>", "<F P=105>", "<F P=104>")
                     auto.close()
-                    self.parseAndIndex()
+                    #self.parseAndIndex()
                 self.indexer.merge()
                 self.indexer.tmpDict.clear()
                 i = i + 1
@@ -95,8 +95,15 @@ class ReadFile:
             elif (line.strip() == closeLabel):
                 self.textCount = self.textCount + 1
                 inPart = False
-                self.textsList.append([stringText,fileTitle,fileCity,fileLang])
+                #self.textsList.append([stringText, fileTitle, fileCity, fileLang])
                 self.langList.append(fileLang)
+                afterParse = self.parser.parseText(stringText)
+                if (self.do_Stemming):
+                    afterParse = self.makeStemList(afterParse)
+                self.indexer.tokenList = afterParse
+                entitiesList = self.indexer.add(fileTitle)
+                self.fileIndex[fileTitle] = [self.indexer.maxTF, len(self.indexer.tokenList), fileCity, fileLang,
+                                             len(afterParse), entitiesList]
                 stringText = ""
                 continue
             if (inPart):
@@ -113,7 +120,8 @@ class ReadFile:
                 afterParse = self.makeStemList(afterParse)
             self.indexer.tokenList = afterParse
             entitiesList = self.indexer.add(title)
-            self.fileIndex[title] = [self.indexer.maxTF, len(self.indexer.tokenList), city, lang, len(afterParse), entitiesList]
+            self.fileIndex[title] = [self.indexer.maxTF, len(self.indexer.tokenList), city, lang, len(afterParse),
+                                     entitiesList]
         self.textsList.clear()
 
     def readAllCities(self, file, subCity):  # make allCity list first
@@ -122,9 +130,9 @@ class ReadFile:
             if (subCity != None and subCity in line and '><' not in line):
                 subCityValue = (line[line.index('>') + 1:-(len(line) - line.index(' ', 11))].strip())
             if (subCityValue != ""):
-                if(subCityValue[0].isalpha()==False):
-                    subCityValue=subCityValue[1:]
-                if(subCityValue[len(subCityValue)-1].isalpha()==False):
+                if (subCityValue[0].isalpha() == False):
+                    subCityValue = subCityValue[1:]
+                if (subCityValue[len(subCityValue) - 1].isalpha() == False):
                     subCityValue = subCityValue[:-1]
                 self.citiesList.append(subCityValue)
                 subCityValue = ""
@@ -154,7 +162,7 @@ class ReadFile:
     def makeStemList(self, afterParse):
         ps = PorterStemmer()
         for i in range(0, len(afterParse)):
-            if(afterParse[i][0].isalpha()):
+            if (afterParse[i][0].isalpha()):
                 afterParse[i] = ps.stem(afterParse[i])
             continue
         return afterParse
