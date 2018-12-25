@@ -33,7 +33,7 @@ class Searcher:
                     for sim in self.similarityDict[w.lower()]:
                         if(sim[0] not in semanticQuery):
                             semanticQuery.append(sim[0])
-            print(semanticQuery)
+            #print(semanticQuery)
             resList = self.ranker.calculateRate(semanticQuery)
         else:
             resList = self.ranker.calculateRate(parseQuery)
@@ -85,9 +85,11 @@ class Searcher:
                 semanticQuery = []
                 for w in parseQuery:
                     semanticQuery.append(w)
-                    for sim in self.similarityDict[w]:
-                        semanticQuery.append(sim[0])
-                print(semanticQuery)
+                    if (w.lower() in self.similarityDict):
+                        for sim in self.similarityDict[w.lower()]:
+                            if (sim[0] not in semanticQuery):
+                                semanticQuery.append(sim[0])
+                #print(semanticQuery)
                 resList = self.ranker.calculateRate(semanticQuery)
             else:
                 resList = self.ranker.calculateRate(parseQuery)
@@ -110,7 +112,17 @@ class Searcher:
                 resultDict[q] = self.addEntities(theRanking)
             else:
                 resultDict[q] = theRanking
+        self.createAswerFile(resultDict)
         print(resultDict)
+        return(resultDict)
+
+    def createAswerFile(self, results):
+        with open("ourAnswers.txt","w+") as file:
+            for res in results.keys():
+                for i in results[res]:
+                    string = str(res) + " 0 " + i[0] + " 0"
+                    file.write(string + "\n")
+            file.close()
 
     def addEntities(self, docList):
         entitiesDict = {}

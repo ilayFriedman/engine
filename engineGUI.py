@@ -250,20 +250,20 @@ class Toplevel1:
 
 
 
-    #
-    # def browse2(self):
-    #     dirWind = tk.Tk()
-    #     dirWind.withdraw()
-    #     self.dictSorce1 = askdirectory()
-    #     self.Entry1.after(0,self.Entry1.insert(0, self.dictSorce1))
-    #     dirWind.destroy()
-    #
-    # def browse1(self):
-    #     dirWind = tk.Tk()
-    #     dirWind.withdraw()
-    #     self.dictSorce2 = askdirectory()
-    #     self.Entry1.after(0, self.Entry2.insert(0, self.dictSorce2))
-    #     dirWind.destroy()
+
+    def browse2(self):
+        dirWind = tk.Tk()
+        dirWind.withdraw()
+        self.dictSorce1 = askdirectory()
+        self.Entry1.after(0,self.Entry1.insert(0, self.dictSorce1))
+        dirWind.destroy()
+
+    def browse1(self):
+        dirWind = tk.Tk()
+        dirWind.withdraw()
+        self.dictSorce2 = askdirectory()
+        self.Entry1.after(0, self.Entry2.insert(0, self.dictSorce2))
+        dirWind.destroy()
 
     def createAll(self):
         if(os.path.exists(self.Entry1.get()+"/finalIndex.txt") and self.var1 == 0):

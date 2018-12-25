@@ -8,9 +8,11 @@ import os
 import shutil
 import sys
 import timeit
+import tkinter
 import ujson
 from tkinter import messagebox
 from tkinter.filedialog import askdirectory, askopenfile
+from tkinter.tix import ScrolledListBox
 
 from ReadFile import ReadFile
 from Searcher import Searcher
@@ -46,6 +48,7 @@ def create_Toplevel1(root, *args, **kwargs):
     w = tk.Toplevel (root)
     partB_support.set_Tk_var()
     top = Toplevel1 (w)
+
     partB_support.init(w, top, *args, **kwargs)
     return (w, top)
 
@@ -61,6 +64,7 @@ class Toplevel1:
         self.ReadFileIndex = None
         self.ReadfinalIndex = None
         self.engineReadFile=None
+
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
         _bgcolor = '#d9d9d9'  # X11 color: 'gray85'
@@ -264,7 +268,7 @@ class Toplevel1:
         self.multiQuerySeachButton.configure(text='''Search on Queries file''')
         self.multiQuerySeachButton.configure(width=108)
         self.multiQuerySeachButton.configure(state='disabled')
-        self.multiQuerySeachButton.configure(command=self.multiQueries)
+        # self.multiQuerySeachButton.configure(command=self.multiQueries)
 
         self.CitiesLable = ttk.Label(self.Labelframe_queryField)
         self.CitiesLable.place(relx=0.725, rely=0.114, height=24, width=85
@@ -321,6 +325,20 @@ class Toplevel1:
         self.Labelframe_results = tk.LabelFrame(top)
         self.Labelframe_results.place(relx=0.505, rely=0.123, relheight=0.441
                 , relwidth=0.464)
+
+
+        # self.shit = ScrolledListBox(top)
+        # self.citiesList.place(relx=0.709, rely=0.676, relheight=0.25
+        #         , relwidth=0.237)
+        # self.citiesList.configure(background="white")
+        # self.citiesList.configure(disabledforeground="#a3a3a3")
+        # self.citiesList.configure(font="TkFixedFont")
+        # self.citiesList.configure(foreground="#000000")
+        # self.citiesList.configure(width=174)
+        # self.citiesList.configure(selectmode='multiple')
+        # self.Labelframe_results = tk.LabelFrame(top)
+        # self.Labelframe_results.place(relx=0.505, rely=0.123, relheight=0.441
+        #         , relwidth=0.464)
 
 
 
@@ -573,6 +591,29 @@ class Toplevel1:
 
             mylist.pack(side=tk.LEFT, fill=tk.BOTH)
             scrollbar.config(command=mylist.yview)
+    def resultsQueryRegular(self):
+        win = tk.Toplevel()
+        win.geometry("400x420")
+        win.title("Results for query")
+        lb_header = ['No', 'File Name', 'Relevance', 'Entities']
+        self.textTest = tk.Entry(win)
+        print (self.postingPathTextField.get())
+        self.textTest.insert(0,self.postingPathTextField.get())
+        self.textTest.pack()
+
+        self.resTable = ttk.Treeview(win,columns=lb_header, show="headings")
+        # tree.grid(in_=self.Labelframe_results)
+        self.resTable.place_configure(relx=0.51, rely=0.220, height=170)
+        i = 0
+        for col in lb_header:
+            self.resTable.heading(col, text=col.title())
+            self.resTable.column('No', width=25)
+            self.resTable.column('File Name', width=90)
+        self.resTable.column('Relevance', width=90)
+        self.resTable.column('Entities', width=210)
+        self.resTable.pack()
+
+
     def selectedItemInCitiesList(self):
         citiesSelectedList=[]
         for i in self.citiesList.curselection():
@@ -600,7 +641,7 @@ class Toplevel1:
             for item in self.loaded.singleQueryCalc(self.singleQueryTextField.get()):
                 self.tree.insert('', 'end', values=(i, item[0],item[1]))
                 i=i+1
-
+        self.resultsQueryRegular()
     def queryFileBrowse(self):
         dirWind = tk.Tk()
         dirWind.withdraw()
@@ -612,28 +653,28 @@ class Toplevel1:
             self.multiQueryTextField.insert(0, str(path))
         dirWind.destroy()
 
-    def multiQueries(self):
-        self.tree.delete(*self.tree.get_children())
-        i = 1
-        if (self.semanticCheckBoxV.get() == 1):
-            self.loaded.doSemantics = 1
-        else:
-            self.loaded.doSemantics = 0
-        if (self.onlyCitiesRes.get() == 1):
-            self.loaded.citiesList = self.selectedItemInCitiesList()
-        else:
-            self.loaded.citiesList = None
-        if (self.entitiesCheckBoxV.get() == 1):
-            self.loaded.showEntities = self.entitiesCheckBoxV.get()
-            # dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
-            # for item in dict:
-            #     # self.tree.insert('', 'end', values=(i, item[0], item[1], dict[item]))
-            #     i = i + 1
-            print ("shitt")
-        else:
-            for item in self.loaded.multiQueryCalc(self.multiQueryTextField.get()):
-                self.tree.insert('', 'end', values=(i, item[0], item[1]))
-                i = i + 1
+    # def multiQueries(self):
+    #     self.tree.delete(*self.tree.get_children())
+    #     i = 1
+    #     if (self.semanticCheckBoxV.get() == 1):
+    #         self.loaded.doSemantics = 1
+    #     else:
+    #         self.loaded.doSemantics = 0
+    #     if (self.onlyCitiesRes.get() == 1):
+    #         self.loaded.citiesList = self.selectedItemInCitiesList()
+    #     else:
+    #         self.loaded.citiesList = None
+    #     if (self.entitiesCheckBoxV.get() == 1):
+    #         self.loaded.showEntities = self.entitiesCheckBoxV.get()
+    #         # dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
+    #         # for item in dict:
+    #         #     # self.tree.insert('', 'end', values=(i, item[0], item[1], dict[item]))
+    #         #     i = i + 1
+    #         print ("shitt")
+    #     else:
+    #         for item in self.loaded.multiQueryCalc(self.multiQueryTextField.get()):
+    #             self.tree.insert('', 'end', values=(i, item[0], item[1]))
+    #             i = i + 1
 if __name__ == '__main__':
     vp_start_gui()
 
