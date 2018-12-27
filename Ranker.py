@@ -32,8 +32,13 @@ class Ranker:
                     inDocList[data[i]] = data[i + 1]
                     i += 2
                 cWD[word] = inDocList
+        mone = 0
+        wordInDoc = None
+        wordInQ = 0
         for doc in self.docIndex:
-            currRank = 0
+            currRankBM25 = 0
+            rankCosSim = 0
+
             docLen = self.docIndex[doc][4]
             for word in query:
                 if(word in self.baseIndex.keys()):
@@ -42,11 +47,12 @@ class Ranker:
                 if(word in cWD and cWD[word] != None):
                     if (doc in cWD[word]):
                         currCWD = cWD[word][doc]
-                        currRank += self.bmCalc(counter[word], currCWD, docLen, currDF)
-                    if(currRank != 0):
-                        resultDict[doc] = currRank
+                        currRankBM25 += self.bmCalc(counter[word], currCWD, docLen, currDF)
+                    if(currRankBM25 != 0 ):
+                        resultDict[doc] = currRankBM25
         bestRank = OrderedDict(sorted(resultDict.items(), key = itemgetter(1), reverse = True))
         return(bestRank)
+
 
     def bmCalc(self, cWQ, cWD, docLen, df):
         k = 2.0

@@ -23,6 +23,7 @@ class Searcher:
         Jfile.close()
 
     def singleQueryCalc(self, query):
+        #print("LEN SIM: ", len(self.similarityDict))
         parseQuery = Parse(self.stopWords).parseText(query)
         self.ranker.query = parseQuery
         if(self.doSemantics == 1):
@@ -33,7 +34,7 @@ class Searcher:
                     for sim in self.similarityDict[w.lower()]:
                         if(sim[0] not in semanticQuery):
                             semanticQuery.append(sim[0])
-            #print(semanticQuery)
+            print(semanticQuery)
             resList = self.ranker.calculateRate(semanticQuery)
         else:
             resList = self.ranker.calculateRate(parseQuery)
@@ -45,12 +46,12 @@ class Searcher:
                 for doc in resList:
                     if (self.fileIndex[doc][2] == city):
                         tmpDict[doc] = resList[doc]
-                x = itertools.islice(tmpDict.items(), 0, 50)
+                x = itertools.islice(tmpDict.items(), 0, 1200)
                 theRanking.clear()
                 for i in x:
                     theRanking.append(i)
         else:
-            x = itertools.islice(resList.items(), 0, 50)
+            x = itertools.islice(resList.items(), 0, 1200)
             for i in x:
                 theRanking.append(i)
         # print(theRanking)
@@ -100,23 +101,23 @@ class Searcher:
                     for doc in resList:
                         if (self.fileIndex[doc][2] == city):
                             tmpDict[doc] = resList[doc]
-                    x = itertools.islice(tmpDict.items(), 0, 1200)
+                    x = itertools.islice(tmpDict.items(), 0, 50)
                     theRanking.clear()
                     for i in x:
                         theRanking.append(i)
             else:
-                x = itertools.islice(resList.items(), 0, 1200)
+                x = itertools.islice(resList.items(), 0, 50)
                 for doc in x:
                     theRanking.append(doc)
             if (self.showEntities == 1):
-                resultDict[q] = self.addEntities(theRanking)
+                resultDict[(q,querysDict[q])] = self.addEntities(theRanking)
             else:
-                resultDict[q] = theRanking
-        self.createAswerFile(resultDict)
+                resultDict[(q,querysDict[q])] = theRanking
+        self.createAnswerFile(resultDict)
         print(resultDict)
         return(resultDict)
 
-    def createAswerFile(self, results):
+    def createAnswerFile(self, results):
         with open("ourAnswers3.txt","w+") as file:
             for res in results.keys():
                 for i in results[res]:
