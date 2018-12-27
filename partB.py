@@ -221,7 +221,7 @@ class Toplevel1:
         self.singleQuerySearchButton.configure(text='''Search Query''')
         self.singleQuerySearchButton.configure(width=110)
         self.singleQuerySearchButton.configure(state='disabled')
-        self.singleQuerySearchButton.configure(command=self.submitSingleQuery)
+        self.singleQuerySearchButton.configure(command=self.resultsQueryRegular)
 
         self.singleQueryTextField = ttk.Entry(self.Labelframe_queryField)
         self.singleQueryTextField.place(relx=0.014, rely=0.171, relheight=0.12
@@ -353,17 +353,17 @@ class Toplevel1:
         self.Labelframe_results.configure(highlightcolor="black")
         self.Labelframe_results.configure(width=340)
 
-        lb_header = ['No','File Name', 'Relevance','Entities']
-        self.tree = ttk.Treeview(columns=lb_header, show="headings")
-        self.tree.grid(in_=self.Labelframe_results)
-        self.tree.place_configure(relx=0.51,  rely=0.220,height=170)
-        i=0
-        for col in lb_header:
-            self.tree.heading(col, text=col.title())
-        self.tree.column('No', width=25)
-        self.tree.column('File Name', width=90)
-        self.tree.column('Relevance', width=90)
-        self.tree.column('Entities', width=210)
+        # lb_header = ['No','File Name', 'Relevance','Entities']
+        # self.tree = ttk.Treeview(columns=lb_header, show="headings")
+        # self.tree.grid(in_=self.Labelframe_results)
+        # self.tree.place_configure(relx=0.51,  rely=0.220,height=170)
+        # i=0
+        # for col in lb_header:
+        #     self.tree.heading(col, text=col.title())
+        # self.tree.column('No', width=25)
+        # self.tree.column('File Name', width=90)
+        # self.tree.column('Relevance', width=90)
+        # self.tree.column('Entities', width=210)
 
         self.saveResultsButton = ttk.Button(self.Labelframe_results)
         self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
@@ -439,7 +439,6 @@ class Toplevel1:
                                        ,self.postingPathTextField.get(),self.doStemmingV,self.ReadBaseDict,self.ReadFileIndex,self.entitiesCheckBoxV,self.semanticCheckBoxV)
 
     def resetQueryAera(self):
-        self.tree.delete(*self.tree.get_children())
         self.singleQueryTextField.delete(0, 'end')
         self.multiQueryTextField.delete(0, 'end')
         self.citiesList.delete(0,'end')
@@ -584,6 +583,7 @@ class Toplevel1:
             win.title("Terms")
             scrollbar = tk.Scrollbar(win)
             scrollbar.pack(side='right', fill='y')
+            win.configure(background='#000000')
 
             mylist = tk.Listbox(win, yscrollcommand=scrollbar.set,width=200)
             for term in sorted(self.ReadBaseDict,key=str.casefold):
@@ -593,17 +593,13 @@ class Toplevel1:
             scrollbar.config(command=mylist.yview)
     def resultsQueryRegular(self):
         win = tk.Toplevel()
-        win.geometry("400x420")
+        win.geometry("800x620")
         win.title("Results for query")
         lb_header = ['No', 'File Name', 'Relevance', 'Entities']
-        self.textTest = tk.Entry(win)
-        print (self.postingPathTextField.get())
-        self.textTest.insert(0,self.postingPathTextField.get())
-        self.textTest.pack()
-
+        ttk.Label(win,text="Query Results:",font = "caliberi 34 bold").pack()
         self.resTable = ttk.Treeview(win,columns=lb_header, show="headings")
         # tree.grid(in_=self.Labelframe_results)
-        self.resTable.place_configure(relx=0.51, rely=0.220, height=170)
+        self.resTable.place(height=670)
         i = 0
         for col in lb_header:
             self.resTable.heading(col, text=col.title())
@@ -611,7 +607,29 @@ class Toplevel1:
             self.resTable.column('File Name', width=90)
         self.resTable.column('Relevance', width=90)
         self.resTable.column('Entities', width=210)
-        self.resTable.pack()
+
+
+        self.resTable.delete(*self.resTable.get_children())
+        i = 1
+        if (self.semanticCheckBoxV.get() == 1):
+            self.loaded.doSemantics = 1
+        else:
+            self.loaded.doSemantics = 0
+        if (self.onlyCitiesRes.get() == 1):
+            self.loaded.citiesList = self.selectedItemInCitiesList()
+        else:
+            self.loaded.citiesList = None
+        if (self.entitiesCheckBoxV.get() == 1):
+            self.loaded.showEntities = self.entitiesCheckBoxV.get()
+            dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
+            for item in dict:
+                self.resTable.insert('', 'end', values=(i, item[0], item[1], dict[item]))
+                i = i + 1
+        else:
+            for item in self.loaded.singleQueryCalc(self.singleQueryTextField.get()):
+                self.resTable.insert('', 'end', values=(i, item[0], item[1]))
+                i = i + 1
+        self.resTable.pack(fill='x',padx=20)
 
 
     def selectedItemInCitiesList(self):
@@ -620,28 +638,28 @@ class Toplevel1:
             citiesSelectedList.append(self.citiesList.get(i))
         return(citiesSelectedList)
 
-    def submitSingleQuery(self):
-        self.tree.delete(*self.tree.get_children())
-        i = 1
-        if(self.semanticCheckBoxV.get() == 1):
-            self.loaded.doSemantics = 1
-        else:
-            self.loaded.doSemantics = 0
-        if(self.onlyCitiesRes.get() == 1):
-            self.loaded.citiesList = self.selectedItemInCitiesList()
-        else:
-            self.loaded.citiesList =None
-        if(self.entitiesCheckBoxV.get() == 1):
-            self.loaded.showEntities = self.entitiesCheckBoxV.get()
-            dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
-            for item in dict:
-                self.tree.insert('', 'end', values=(i, item[0], item[1],dict[item]))
-                i = i + 1
-        else:
-            for item in self.loaded.singleQueryCalc(self.singleQueryTextField.get()):
-                self.tree.insert('', 'end', values=(i, item[0],item[1]))
-                i=i+1
-        self.resultsQueryRegular()
+    # def submitSingleQuery(self):
+    #     self.tree.delete(*self.tree.get_children())
+    #     i = 1
+    #     if(self.semanticCheckBoxV.get() == 1):
+    #         self.loaded.doSemantics = 1
+    #     else:
+    #         self.loaded.doSemantics = 0
+    #     if(self.onlyCitiesRes.get() == 1):
+    #         self.loaded.citiesList = self.selectedItemInCitiesList()
+    #     else:
+    #         self.loaded.citiesList =None
+    #     if(self.entitiesCheckBoxV.get() == 1):
+    #         self.loaded.showEntities = self.entitiesCheckBoxV.get()
+    #         dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
+    #         for item in dict:
+    #             self.tree.insert('', 'end', values=(i, item[0], item[1],dict[item]))
+    #             i = i + 1
+    #     else:
+    #         for item in self.loaded.singleQueryCalc(self.singleQueryTextField.get()):
+    #             self.tree.insert('', 'end', values=(i, item[0],item[1]))
+    #             i=i+1
+    #     self.resultsQueryRegular()
     def queryFileBrowse(self):
         dirWind = tk.Tk()
         dirWind.withdraw()
