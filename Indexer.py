@@ -115,7 +115,9 @@ class Indexer:
         for d in self.tmpDict:
             for k, v in d.items():
                 result_dict.setdefault(k, []).extend(v)
+            del d
         self.dictOfFiles.append(result_dict)
+        del result_dict
 
     def bigMerge(self, num):
         result_dict = {}
@@ -125,7 +127,7 @@ class Indexer:
                     result_dict.setdefault(k, []).extend(v)
                 elif (k.lower() in self.baseDict):
                     result_dict.setdefault(k.lower(), []).extend(v)
-
+            del d
         keys = sorted(result_dict.keys())
         keys.sort(key=str.casefold)
         letter = keys[0][0]
@@ -151,13 +153,10 @@ class Indexer:
     def finalMerge(self):
         filesNames = sorted(os.listdir(self.pathToWrite + "/"))
         filesNames.sort(key=str.casefold)
-
         getAtLeastOnce = False
-        # for letter in string.ascii_uppercase + string.digits:
         dict = []
         letter = filesNames[0][0]
         i = 0
-
         while (i < len(filesNames)):
             if (letter.lower() == filesNames[i][0].lower()):
                 getAtLeastOnce = True
@@ -167,15 +166,36 @@ class Indexer:
                     file.close()
                     os.remove(self.pathToWrite + "/" + fileName)
                     file.close()
-                    # filesNames.remove(fileName)
                     i += 1
             elif (getAtLeastOnce):
                 result_dict = {}
                 for d in dict:
                     for k, v in d.items():
                         result_dict.setdefault(k, []).extend(v)
-                with open(self.pathToWrite + "/" + str(letter).upper() + ".ujson", "w+") as tmpFileDict:
-                    ujson.dump(result_dict, tmpFileDict)
+                    del d
+                if (letter == "S"):
+                    n = len(result_dict)
+                    n = n // 8
+                    d1 = {}
+                    d2 = {}
+                    j = 0
+                    for word in result_dict:
+                        if (j < n):
+                            d1[word] = result_dict[word]
+                        else:
+                            d2[word] = result_dict[word]
+                        j += 1
+                    with open(self.pathToWrite + "/S1.ujson", "w+") as tmpFileDict:
+                        ujson.dump(d1, tmpFileDict)
+                        del d1
+                        tmpFileDict.close()
+                    with open(self.pathToWrite + "/S2.ujson", "w+") as tmpFileDict:
+                        ujson.dump(d2, tmpFileDict)
+                        del d2
+                        tmpFileDict.close()
+                else:
+                    with open(self.pathToWrite + "/" + str(letter).upper() + ".ujson", "w+") as tmpFileDict:
+                        ujson.dump(result_dict, tmpFileDict)
                 dict = []
                 result_dict.clear()
                 if (i < len(filesNames)):
@@ -186,6 +206,7 @@ class Indexer:
         for d in dict:
             for k, v in d.items():
                 result_dict.setdefault(k, []).extend(v)
+            del d
         with open(self.pathToWrite + "/" + str(letter).upper() + ".ujson", "w+") as tmpFileDict:
             ujson.dump(result_dict, tmpFileDict)
             tmpFileDict.close()
@@ -212,7 +233,7 @@ class Indexer:
                     finalFile.write(str(tempDict[item]))
                     end = int(finalFile.tell())
                     self.baseDict[item][1] = end - begin
-
+            del tempDict
         # print(self.baseDict)
         finalFile.close()
 
@@ -221,7 +242,7 @@ class Indexer:
         size = self.baseDict[token][1]
         with open(self.pathToWrite + "/" + self.finalIndexName + ".txt", "r+") as index:
             index.seek(offset)
-            data = index.read(size)  # if you only wanted to read 512 bytes, do .read(512)
+            data = index.read(size)
             return (data)
 
     def createCityDict(self, citiesList):
@@ -237,16 +258,17 @@ class Indexer:
                 detailsList = str(self.readFromFile(city.lower()))
             if(len(city) > 1):
                 cityName = city[0] + city[1:].lower()
-            for i in range(0, len(apiDict)):
-                if (cityName in apiDict[i]["capital"]):
-                    self.NumbersOfCapitals = self.numbersOfCapital + 1
-                    population = apiDict[i]["population"]
-                    if (((population) >= 1000 and (population) < 1000000)):
-                        population = str(float(population) / 1000) + "K"  # 1,000
-                    elif ((population) >= 1000000 and (population) < 1000000000):
-                        population = str(float(population) / 1000000) + "M"  # 1,000,000
-                    elif ((population) >= 1000000000):
-                        population = str(float(population) / 1000000000) + "B"  # 1,000,000,000
-                    self.citiesIndex[cityName].append(
-                        (apiDict[i]["name"], apiDict[i]["currencies"][0]["code"], population))
-            self.citiesIndex[cityName].append(detailsList)
+                for i in range(0, len(apiDict)):
+                    if (cityName in apiDict[i]["capital"]):
+                        self.NumbersOfCapitals = self.numbersOfCapital + 1
+                        population = apiDict[i]["population"]
+                        if (((population) >= 1000 and (population) < 1000000)):
+                            population = str(float(population) / 1000) + "K"  # 1,000
+                        elif ((population) >= 1000000 and (population) < 1000000000):
+                            population = str(float(population) / 1000000) + "M"  # 1,000,000
+                        elif ((population) >= 1000000000):
+                            population = str(float(population) / 1000000000) + "B"  # 1,000,000,000
+                        self.citiesIndex[cityName].append(
+                            (apiDict[i]["name"], apiDict[i]["currencies"][0]["code"], population))
+                self.citiesIndex[cityName].append(detailsList)
+        del apiDict

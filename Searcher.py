@@ -100,12 +100,12 @@ class Searcher:
                     for doc in resList:
                         if (self.fileIndex[doc][2] == city):
                             tmpDict[doc] = resList[doc]
-                    x = itertools.islice(tmpDict.items(), 0, 50)
+                    x = itertools.islice(tmpDict.items(), 0, 1200)
                     theRanking.clear()
                     for i in x:
                         theRanking.append(i)
             else:
-                x = itertools.islice(resList.items(), 0, 50)
+                x = itertools.islice(resList.items(), 0, 1200)
                 for doc in x:
                     theRanking.append(doc)
             if (self.showEntities == 1):
@@ -117,10 +117,10 @@ class Searcher:
         return(resultDict)
 
     def createAswerFile(self, results):
-        with open("ourAnswers.txt","w+") as file:
+        with open("ourAnswers3.txt","w+") as file:
             for res in results.keys():
                 for i in results[res]:
-                    string = str(res) + " 0 " + i[0] + " 0"
+                    string = str(res) + " 0 " + i[0] + " 1"
                     file.write(string + "\n")
             file.close()
 
