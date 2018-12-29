@@ -23,7 +23,7 @@ class Searcher:
         Jfile.close()
 
     def singleQueryCalc(self, query):
-        print("LEN SIM: ", len(self.similarityDict))
+        #print("LEN SIM: ", len(self.similarityDict))
         parseQuery = Parse(self.stopWords).parseText(query)
         self.ranker.query = parseQuery
         if(self.doSemantics == 1):
@@ -137,15 +137,12 @@ class Searcher:
             for word in entitiesDict:
                 if (word in self.baseDic):
                     ansDict[word] = entitiesDict[word]
-            # print("ANS: ", ansDict)
-            # x = itertools.islice(ansDict.items(), 0, 5)
-            # i = sorted(ansDict.values(),reverse=True)[0]
-
             x = sorted(ansDict.items(), key=itemgetter(1), reverse=True)
+            x = itertools.islice(x, 0, 5)
             i = self.fileIndex[tuple[0]][4]
             for e in x:
                 entitiesToShow.append((e[0], e[1] / i))
-            # print(entitiesToShow)
+            #print(entitiesToShow)
             result[tuple] = entitiesToShow
         return result
         # print("FINAL: ", result)

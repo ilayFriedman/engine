@@ -17,8 +17,12 @@ class Parse:
         string4 = "June July JUNE JULY"
         string3 = "May MAY Jan Feb Mar Apr Jun Jul Aug Sep Oct Nov Dec"
 
-        stringTextList = re.split('[ \n]', re.sub("[*~@#^&;:!?\'(){}\[\]\"\=+]", " ", text))
-        stringTextList = re.split('[ \n]', re.sub("[,]", "", text))
+        stringTextList = re.sub("[*~@#^&;:!?\'(){}\[\]\"\=+]", " ", text)
+        stringTextList = re.sub("[\b\.\b]{3}", " ", stringTextList)
+        stringTextList = re.sub("[\b\.\b]{2}", " ", stringTextList)
+        stringTextList = re.sub("[,]", "", stringTextList)
+        stringTextList = re.split('[ \n]', stringTextList)
+
         tokenList = []
         i = 0;
         elements = islice(stringTextList, 0, None)

@@ -7,9 +7,9 @@ import ujson as ujson
 from Searcher import Searcher
 #import gensim.models
 
-citiesfile = open("post no/citiesIndex.ujson", "r+")
-baseFile = open("post no/baseDict.ujson", "r+")
-fileFile = open("post no/fileIndex.ujson", "r+")
+citiesfile = open("post/citiesIndex.ujson", "r+")
+baseFile = open("post/baseDict.ujson", "r+")
+fileFile = open("post/fileIndex.ujson", "r+")
 ReadCitiesIndex = ujson.load(citiesfile)
 ReadBaseDict = ujson.load(baseFile)
 ReadFileIndex = ujson.load(fileFile)
@@ -17,7 +17,7 @@ citiesfile.close()
 baseFile.close()
 fileFile.close()
 
-searcher = Searcher("/stop_words.txt", "post no", False,ReadBaseDict,ReadFileIndex,
+searcher = Searcher("/stop_words.txt", "post", False,ReadBaseDict,ReadFileIndex,
                     False, False)
 #q = searcher.singleQueryCalc("Falkland")
 q = searcher.multiQueryCalc("queries.txt")
