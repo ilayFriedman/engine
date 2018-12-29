@@ -10,7 +10,7 @@ import sys
 import timeit
 import tkinter
 import ujson
-from tkinter import messagebox
+from tkinter import messagebox, filedialog
 from tkinter.filedialog import askdirectory, askopenfile
 from tkinter.tix import ScrolledListBox
 
@@ -64,6 +64,11 @@ class Toplevel1:
         self.ReadFileIndex = None
         self.ReadfinalIndex = None
         self.engineReadFile=None
+        self.win=None
+        self.Multiwin=None
+        self.IDQ = 0
+        self.idQ = 999
+        self.selectQ = ""
 
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
@@ -226,7 +231,6 @@ class Toplevel1:
         self.singleQueryTextField = ttk.Entry(self.Labelframe_queryField)
         self.singleQueryTextField.place(relx=0.014, rely=0.171, relheight=0.12
                 , relwidth=0.458, bordermode='ignore')
-        self.singleQueryTextField.configure(textvariable=partB_support.singleQuertTextField)
         self.singleQueryTextField.configure(width=316)
         self.singleQueryTextField.configure(takefocus="")
         self.singleQueryTextField.configure(cursor="ibeam")
@@ -236,7 +240,6 @@ class Toplevel1:
         self.multiQueryTextField = ttk.Entry(self.Labelframe_queryField)
         self.multiQueryTextField.place(relx=0.014, rely=0.443, relheight=0.12
                 , relwidth=0.284, bordermode='ignore')
-        self.multiQueryTextField.configure(textvariable=partB_support.multiQueryTextField)
         self.multiQueryTextField.configure(width=196)
         self.multiQueryTextField.configure(takefocus="")
         self.multiQueryTextField.configure(cursor="ibeam")
@@ -268,7 +271,7 @@ class Toplevel1:
         self.multiQuerySeachButton.configure(text='''Search on Queries file''')
         self.multiQuerySeachButton.configure(width=108)
         self.multiQuerySeachButton.configure(state='disabled')
-        # self.multiQuerySeachButton.configure(command=self.multiQueries)
+        self.multiQuerySeachButton.configure(command=self.resultsQueryMulti)
 
         self.CitiesLable = ttk.Label(self.Labelframe_queryField)
         self.CitiesLable.place(relx=0.725, rely=0.114, height=24, width=85
@@ -365,12 +368,6 @@ class Toplevel1:
         # self.tree.column('Relevance', width=90)
         # self.tree.column('Entities', width=210)
 
-        self.saveResultsButton = ttk.Button(self.Labelframe_results)
-        self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
-                , bordermode='ignore')
-        self.saveResultsButton.configure(takefocus="")
-        self.saveResultsButton.configure(text='''Save results''')
-        self.saveResultsButton.configure(state='disabled')
 
         self.StemmingCheckBox = tk.Checkbutton(top)
         self.StemmingCheckBox.place(relx=0.027, rely=0.512, relheight=0.051
@@ -592,14 +589,21 @@ class Toplevel1:
             mylist.pack(side=tk.LEFT, fill=tk.BOTH)
             scrollbar.config(command=mylist.yview)
     def resultsQueryRegular(self):
-        win = tk.Toplevel()
-        win.geometry("800x620")
-        win.title("Results for query")
+        if(self.win != None):
+            self.destroyMe()
+        self.win = tk.Toplevel()
+        self.win.geometry("800x420")
+        self.win.title("Results for query")
         lb_header = ['No', 'File Name', 'Relevance', 'Entities']
-        ttk.Label(win,text="Query Results:",font = "caliberi 34 bold").pack()
-        self.resTable = ttk.Treeview(win,columns=lb_header, show="headings")
+        ttk.Label(self.win, text="Query Results:", font="caliberi 34 bold").pack()
+        queryText = "query:'' " + str(self.singleQueryTextField.get()).replace(" ",",")+" ''"
+        ttk.Label(self.win, text=queryText, font="caliberi 12 bold").pack()
+        self.resTable = ttk.Treeview(self.win, selectmode='browse',columns=lb_header, show="headings")
         # tree.grid(in_=self.Labelframe_results)
-        self.resTable.place(height=670)
+        self.resTable.place(height=1870)
+        vsb = ttk.Scrollbar(self.win, orient="vertical", command=self.resTable.yview)
+        vsb.place(x=760, y=80, height=200)
+        self.resTable.configure(yscrollcommand=vsb.set)
         i = 0
         for col in lb_header:
             self.resTable.heading(col, text=col.title())
@@ -608,9 +612,10 @@ class Toplevel1:
         self.resTable.column('Relevance', width=90)
         self.resTable.column('Entities', width=210)
 
-
         self.resTable.delete(*self.resTable.get_children())
         i = 1
+        self.preSave=[]
+        self.preSave.clear()
         if (self.semanticCheckBoxV.get() == 1):
             self.loaded.doSemantics = 1
         else:
@@ -624,12 +629,202 @@ class Toplevel1:
             dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
             for item in dict:
                 self.resTable.insert('', 'end', values=(i, item[0], item[1], dict[item]))
+                self.preSave.append(str(self.IDQ) + " 0 "+item[0]+" 1 "+str(round(item[1],4))+" oi"+" \n")
                 i = i + 1
         else:
             for item in self.loaded.singleQueryCalc(self.singleQueryTextField.get()):
                 self.resTable.insert('', 'end', values=(i, item[0], item[1]))
+                self.preSave.append(str(self.IDQ) + " 0 " + item[0] + " 1 " + str(round(item[1],4)) + " oi" + " \n")
                 i = i + 1
+
         self.resTable.pack(fill='x',padx=20)
+
+        self.saveResultsButton = ttk.Button(self.win)
+        self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
+                                     , bordermode='ignore')
+        self.saveResultsButton.configure(takefocus="")
+        self.saveResultsButton.configure(text='''Save results''')
+        self.saveResultsButton.configure(command=self.saveRes)
+        if(i == 1):
+            self.saveResultsButton.configure(state='disabled')
+        self.saveResultsButton.pack()
+
+        self.exitButton = ttk.Button(self.win)
+        self.exitButton.place(relx=0.635, rely=0.093, height=25, width=76
+                                     , bordermode='ignore')
+        self.exitButton.configure(takefocus="")
+        self.exitButton.configure(text='''Exit''')
+        self.exitButton.configure(command=self.destroyMe)
+        self.exitButton.pack()
+
+
+    def resultsQueryMulti(self):
+        if(self.multiQueryTextField.get() == None or self.multiQueryTextField.get() == ""):
+            messagebox.showerror('oops!', "Need insert valid path!")
+            return
+        if(self.Multiwin != None):
+            self.MdestroyMe()
+        self.Multiwin = tk.Toplevel()
+        self.Multiwin.geometry("800x680")
+        self.Multiwin.title("Results for Multi Queries:")
+        lb_header = ['Query ID', 'Query']
+        ttk.Label(self.Multiwin, text="Multi Queries Results:", font="caliberi 34 bold").pack()
+        ttk.Label(self.Multiwin, text="list of Queries in file:", font="caliberi 11 bold").pack()
+        ttk.Label(self.Multiwin, text="Double click on query wll show her results", font="caliberi 10").pack()
+        self.QureyIDTable = ttk.Treeview(self.Multiwin, selectmode='browse',columns=lb_header, show="headings")
+        # tree.grid(in_=self.Labelframe_results)
+        self.QureyIDTable.place(height=1870)
+        self.QureyIDTable.bind("<Double-1>", self.OnDoubleClick)
+        vsb = ttk.Scrollbar(self.Multiwin, orient="vertical", command=self.QureyIDTable.yview)
+        vsb.place(x=562, y=120, height=200)
+        self.QureyIDTable.configure(yscrollcommand=vsb.set)
+        i = 0
+        if (self.semanticCheckBoxV.get() == 1):
+            self.loaded.doSemantics = 1
+        else:
+            self.loaded.doSemantics = 0
+        if (self.onlyCitiesRes.get() == 1):
+            self.loaded.citiesList = self.selectedItemInCitiesList()
+        else:
+            self.loaded.citiesList = None
+        if (self.entitiesCheckBoxV.get() == 1):
+            self.loaded.showEntities = self.entitiesCheckBoxV.get()
+        self.dictRes = self.loaded.multiQueryCalc(self.multiQueryTextField.get())
+        for col in lb_header:
+            self.QureyIDTable.heading(col, text=col.title())
+            self.QureyIDTable.column('Query ID', width=10)
+            self.QureyIDTable.column('Query', width=120)
+        self.QureyIDTable.pack(fill='x', padx=220)
+        for key in self.dictRes.keys():
+            self.QureyIDTable.insert('', 'end', values=(key))
+
+
+        ############################
+        lb_header1 = ['No', 'File Name', 'Relevance', 'Entities']
+        ttk.Label(self.Multiwin, text="\nresults for query:", font="caliberi 12 bold").pack()
+        self.MresTable = ttk.Treeview(self.Multiwin, selectmode='browse', columns=lb_header1, show="headings")
+        # tree.grid(in_=self.Labelframe_results)
+        self.MresTable.place(height=1870)
+        vsb1 = ttk.Scrollbar(self.Multiwin, orient="vertical", command=self.MresTable.yview)
+        vsb1.place(x=760, y=387, height=200)
+        self.MresTable.configure(yscrollcommand=vsb1.set)
+        i = 0
+        for col in lb_header1:
+            self.MresTable.heading(col, text=col.title())
+            self.MresTable.column('No', width=25)
+            self.MresTable.column('File Name', width=90)
+        self.MresTable.column('Relevance', width=90)
+        self.MresTable.column('Entities', width=210)
+
+        self.MresTable.pack(fill='x', padx=20)
+
+        self.MsaveResultsButton = ttk.Button(self.Multiwin)
+        self.MsaveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
+                                     , bordermode='ignore')
+        self.MsaveResultsButton.configure(takefocus="")
+        self.MsaveResultsButton.configure(text='''Save results about this query only''')
+        self.MsaveResultsButton.configure(command=self.MsaveRes)
+        if(len(list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2]) == 0):
+            self.MsaveResultsButton.configure(state='disabled')
+        self.MsaveResultsButton.pack()
+
+        self.MsaveAllResultsButton = ttk.Button(self.Multiwin)
+        self.MsaveAllResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
+                                     , bordermode='ignore')
+        self.MsaveAllResultsButton.configure(takefocus="")
+        self.MsaveAllResultsButton.configure(text='''Save results of all queries together''')
+        self.MsaveAllResultsButton.configure(command=self.MsaveAllRes)
+        if(i == 1):
+            self.MsaveAllResultsButton.configure(state='disabled')
+        self.MsaveAllResultsButton.pack()
+
+        self.MexitButton = ttk.Button(self.Multiwin)
+        self.MexitButton.place(relx=0.635, rely=0.093, height=25, width=76
+                                     , bordermode='ignore')
+        self.MexitButton.configure(takefocus="")
+        self.MexitButton.configure(text='''Exit''')
+        self.MexitButton.configure(command=self.MdestroyMe)
+        self.MexitButton.pack()
+
+    def OnDoubleClick(self,event):
+        self.preSave=[]
+        self.preSave.clear()
+        self.MresTable.delete(*self.MresTable.get_children())
+        self.idQ = str(list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][0])
+        self.selectQ = list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][1]
+        i=1
+        print(self.dictRes)
+        if (self.entitiesCheckBoxV.get() ==0):
+            for item in self.dictRes[(self.idQ,self.selectQ)]:
+                self.MresTable.insert('', 'end', values=(i, item[0], item[1]))
+                i += 1
+                self.preSave.append(self.idQ + " 0 " + item[0] + " 1 " + str(round(item[1], 2)) + " oi" + " \n")
+        else:
+            for item in self.dictRes[(self.idQ,self.selectQ)]:
+                self.MresTable.insert('', 'end', values=(i, item[0], item[1],self.dictRes[(self.idQ,self.selectQ)][item]))
+                i += 1
+                self.preSave.append(self.idQ + " 0 " + item[0] + " 1 " + str(round(item[1], 2)) + " oi" + " \n")
+
+
+        self.MresTable.pack()
+        # print(self.idQ)
+        # print(self.selectQ)
+        # print("-------")
+        # print(self.dictRes[(idQ,selectQ)])
+        if(len(list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2]) != 0):
+            self.MsaveResultsButton.configure(state='normal')
+        self.MsaveResultsButton.pack()
+    def destroyMe(self):
+        self.win.destroy()
+        self.win=None
+    def MdestroyMe(self):
+        self.Multiwin.destroy()
+        self.Multiwin=None
+
+    def saveRes(self):
+        pathForSave = askdirectory()
+        nameRes = str(self.singleQueryTextField.get()).replace(" ", "_") + "[RESULTS]"
+        finalP = pathForSave + "/" + nameRes + ".txt"
+        try:
+            with open(finalP, "w") as saveAs:
+                saveAs.writelines(self.preSave)
+                saveAs.close()
+            messagebox.showinfo('YES!', "The results are saved! ")
+            self.IDQ = self.IDQ + 1
+        except:
+            messagebox.showerror('NO!', "The results are NOT saved! ")
+
+    def MsaveRes(self):
+        pathForSave = askdirectory()
+        # print(self.selectQ)
+        nameRes = str(self.idQ)+"_"+str(self.selectQ)+ "[RESULTS]"
+        finalP = pathForSave + "/" + nameRes + ".txt"
+        try:
+            with open(finalP, "w") as saveAs:
+                saveAs.writelines(self.preSave)
+                saveAs.close()
+            messagebox.showinfo('YES!', "The results are saved! ")
+            self.IDQ = self.IDQ + 1
+        except:
+            messagebox.showerror('NO!', "The results are NOT saved! ")
+
+
+
+    def MsaveAllRes(self):
+
+        pathForSave = askdirectory()
+        nameRes = "all_queries_together[RESULTS]"
+        finalP = pathForSave + "/" + nameRes + ".txt"
+        try:
+            with open(finalP, "w") as saveAs:
+                for line in self.dictRes:
+                    for ans in self.dictRes[line]:
+                        saveAs.write(str(line[0]) + " 0 " + str(ans[0]) + " 1 " + str(round(ans[1], 4)) + " oi\n")
+                saveAs.close()
+            messagebox.showinfo('YES!', "The results are saved! ")
+            self.IDQ = self.IDQ + 1
+        except:
+            messagebox.showerror('NO!', "The results are NOT saved! ")
 
 
     def selectedItemInCitiesList(self):
@@ -638,28 +833,7 @@ class Toplevel1:
             citiesSelectedList.append(self.citiesList.get(i))
         return(citiesSelectedList)
 
-    # def submitSingleQuery(self):
-    #     self.tree.delete(*self.tree.get_children())
-    #     i = 1
-    #     if(self.semanticCheckBoxV.get() == 1):
-    #         self.loaded.doSemantics = 1
-    #     else:
-    #         self.loaded.doSemantics = 0
-    #     if(self.onlyCitiesRes.get() == 1):
-    #         self.loaded.citiesList = self.selectedItemInCitiesList()
-    #     else:
-    #         self.loaded.citiesList =None
-    #     if(self.entitiesCheckBoxV.get() == 1):
-    #         self.loaded.showEntities = self.entitiesCheckBoxV.get()
-    #         dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
-    #         for item in dict:
-    #             self.tree.insert('', 'end', values=(i, item[0], item[1],dict[item]))
-    #             i = i + 1
-    #     else:
-    #         for item in self.loaded.singleQueryCalc(self.singleQueryTextField.get()):
-    #             self.tree.insert('', 'end', values=(i, item[0],item[1]))
-    #             i=i+1
-    #     self.resultsQueryRegular()
+
     def queryFileBrowse(self):
         dirWind = tk.Tk()
         dirWind.withdraw()
@@ -671,28 +845,6 @@ class Toplevel1:
             self.multiQueryTextField.insert(0, str(path))
         dirWind.destroy()
 
-    # def multiQueries(self):
-    #     self.tree.delete(*self.tree.get_children())
-    #     i = 1
-    #     if (self.semanticCheckBoxV.get() == 1):
-    #         self.loaded.doSemantics = 1
-    #     else:
-    #         self.loaded.doSemantics = 0
-    #     if (self.onlyCitiesRes.get() == 1):
-    #         self.loaded.citiesList = self.selectedItemInCitiesList()
-    #     else:
-    #         self.loaded.citiesList = None
-    #     if (self.entitiesCheckBoxV.get() == 1):
-    #         self.loaded.showEntities = self.entitiesCheckBoxV.get()
-    #         # dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
-    #         # for item in dict:
-    #         #     # self.tree.insert('', 'end', values=(i, item[0], item[1], dict[item]))
-    #         #     i = i + 1
-    #         print ("shitt")
-    #     else:
-    #         for item in self.loaded.multiQueryCalc(self.multiQueryTextField.get()):
-    #             self.tree.insert('', 'end', values=(i, item[0], item[1]))
-    #             i = i + 1
 if __name__ == '__main__':
     vp_start_gui()
 
