@@ -70,6 +70,8 @@ class Toplevel1:
         self.IDQ = 0
         self.idQ = 999
         self.selectQ = ""
+        font9 = "-family {Segoe UI} -size 9 -weight bold -slant roman "  \
+            "-underline 0 -overstrike 0"
 
         '''This class configures and populates the toplevel window.
            top is the toplevel containing window.'''
@@ -96,7 +98,7 @@ class Toplevel1:
         top.configure(background="#d9d9d9")
 
         self.TitleLable = tk.Label(top)
-        self.TitleLable.place(relx=0.014, rely=0.02, height=51, width=284)
+        self.TitleLable.place(relx=0.334, rely=0.02, height=51, width=284)
         self.TitleLable.configure(activebackground="#dcef62")
         self.TitleLable.configure(activeforeground="#000000")
         self.TitleLable.configure(background="#d9d9d9")
@@ -107,7 +109,7 @@ class Toplevel1:
         self.TitleLable.configure(width=284)
 
         self.Labelframe_srcPath = tk.LabelFrame(top)
-        self.Labelframe_srcPath.place(relx=0.027, rely=0.143, relheight=0.113
+        self.Labelframe_srcPath.place(relx=0.275, rely=0.143, relheight=0.113
                 , relwidth=0.437)
         self.Labelframe_srcPath.configure(relief='groove')
         self.Labelframe_srcPath.configure(foreground="black")
@@ -123,7 +125,7 @@ class Toplevel1:
         self.browseCorpusButton.configure(command=self.corpusBrowse)
 
         self.corpusPathTextField = tk.Entry(top)
-        self.corpusPathTextField.place(relx=0.041, rely=0.184, height=20
+        self.corpusPathTextField.place(relx=0.29, rely=0.184, height=20
                 , relwidth=0.292)
         self.corpusPathTextField.configure(background="white")
         self.corpusPathTextField.configure(disabledforeground="#a3a3a3")
@@ -134,7 +136,7 @@ class Toplevel1:
         self.corpusPathTextField.configure(width=214)
 
         self.Labelframe_posting = tk.LabelFrame(top)
-        self.Labelframe_posting.place(relx=0.027, rely=0.266, relheight=0.113
+        self.Labelframe_posting.place(relx=0.275, rely=0.266, relheight=0.113
                 , relwidth=0.437)
         self.Labelframe_posting.configure(relief='groove')
         self.Labelframe_posting.configure(foreground="black")
@@ -153,7 +155,7 @@ class Toplevel1:
         self.browsePostingButton.configure(command=self.posingBrowse)
 
         self.postingPathTextField = tk.Entry(top)
-        self.postingPathTextField.place(relx=0.041, rely=0.307, height=20
+        self.postingPathTextField.place(relx=0.29, rely=0.307, height=20
                 , relwidth=0.292)
         self.postingPathTextField.configure(background="white")
         self.postingPathTextField.configure(disabledforeground="#a3a3a3")
@@ -167,20 +169,20 @@ class Toplevel1:
         self.postingPathTextField.configure(textvariable=partB_support.postingTextField)
 
         self.resetAllButton = ttk.Button(top)
-        self.resetAllButton.place(relx=0.355, rely=0.389, height=25, width=76)
+        self.resetAllButton.place(relx=0.633, rely=0.389, height=25, width=76)
         self.resetAllButton.configure(takefocus="")
         self.resetAllButton.configure(text='''Reset All''')
         self.resetAllButton.configure(command=self.resetAll)
 
         self.allTermsButton = ttk.Button(top)
-        self.allTermsButton.place(relx=0.246, rely=0.389, height=25, width=76)
+        self.allTermsButton.place(relx=0.546, rely=0.389, height=25, width=76)
         self.allTermsButton.configure(takefocus="")
         self.allTermsButton.configure(text='''All Terms''')
         self.allTermsButton.configure(state='disabled')
         self.allTermsButton.configure(command=self.showDict)
 
         self.loadFileButton = ttk.Button(top)
-        self.loadFileButton.place(relx=0.246, rely=0.451, height=25, width=156)
+        self.loadFileButton.place(relx=0.546, rely=0.451, height=25, width=156)
         self.loadFileButton.configure(command=partB_support.makeTry)
         self.loadFileButton.configure(takefocus="")
         self.loadFileButton.configure(text='''Load Files from Path''')
@@ -189,14 +191,16 @@ class Toplevel1:
         # self.loadFileButton.configure(state='disabled')
 
         self.loadedLable = ttk.Label(top)
-        self.loadedLable.place(relx=0.246, rely=0.500, height=25, width=156)
+        self.loadedLable.place(relx=0.550, rely=0.500, height=25, width=156)
         self.loadedLable.configure(background="#d9d9d9")
         self.loadedLable.configure(foreground="#d9d9d9")
         self.loadedLable.configure(relief='flat')
         self.loadedLable.configure(text='Index Loaded!')
+        self.loadedLable.configure(font=font9)
+
 
         self.generateIndexButton = tk.Button(top)
-        self.generateIndexButton.place(relx=0.027, rely=0.389, height=54
+        self.generateIndexButton.place(relx=0.275, rely=0.389, height=54
                                        , width=131)
         self.generateIndexButton.configure(activebackground="#ececec")
         self.generateIndexButton.configure(activeforeground="#000000")
@@ -335,52 +339,9 @@ class Toplevel1:
         self.citiesList.configure(foreground="#000000")
         self.citiesList.configure(width=174)
         self.citiesList.configure(selectmode='multiple')
-        self.Labelframe_results = tk.LabelFrame(top)
-        self.Labelframe_results.place(relx=0.505, rely=0.123, relheight=0.441
-                , relwidth=0.464)
-
-
-        # self.shit = ScrolledListBox(top)
-        # self.citiesList.place(relx=0.709, rely=0.676, relheight=0.25
-        #         , relwidth=0.237)
-        # self.citiesList.configure(background="white")
-        # self.citiesList.configure(disabledforeground="#a3a3a3")
-        # self.citiesList.configure(font="TkFixedFont")
-        # self.citiesList.configure(foreground="#000000")
-        # self.citiesList.configure(width=174)
-        # self.citiesList.configure(selectmode='multiple')
-        # self.Labelframe_results = tk.LabelFrame(top)
-        # self.Labelframe_results.place(relx=0.505, rely=0.123, relheight=0.441
-        #         , relwidth=0.464)
-
-
-
-        self.Labelframe_results = tk.LabelFrame(top)
-        self.Labelframe_results.place(relx=0.505, rely=0.123, relheight=0.441
-                                      , relwidth=0.464)
-        self.Labelframe_results.configure(relief='groove')
-        self.Labelframe_results.configure(foreground="black")
-        self.Labelframe_results.configure(text='''Results:''')
-        self.Labelframe_results.configure(background="#d9d9d9")
-        self.Labelframe_results.configure(highlightbackground="#d9d9d9")
-        self.Labelframe_results.configure(highlightcolor="black")
-        self.Labelframe_results.configure(width=340)
-
-        # lb_header = ['No','File Name', 'Relevance','Entities']
-        # self.tree = ttk.Treeview(columns=lb_header, show="headings")
-        # self.tree.grid(in_=self.Labelframe_results)
-        # self.tree.place_configure(relx=0.51,  rely=0.220,height=170)
-        # i=0
-        # for col in lb_header:
-        #     self.tree.heading(col, text=col.title())
-        # self.tree.column('No', width=25)
-        # self.tree.column('File Name', width=90)
-        # self.tree.column('Relevance', width=90)
-        # self.tree.column('Entities', width=210)
-
 
         self.StemmingCheckBox = tk.Checkbutton(top)
-        self.StemmingCheckBox.place(relx=0.027, rely=0.512, relheight=0.051
+        self.StemmingCheckBox.place(relx=0.260, rely=0.512, relheight=0.051
                 , relwidth=0.12)
         self.StemmingCheckBox.configure(activebackground="#ececec")
         self.StemmingCheckBox.configure(activeforeground="#000000")
@@ -566,6 +527,8 @@ class Toplevel1:
             i=i+1
     def resetAll(self):
         try:
+            self.loadedLable.configure(background="#d9d9d9")
+            self.loadedLable.configure(foreground="#d9d9d9")
             self.doStemmingVwhenClicked = self.doStemmingV
             if(self.doStemmingVwhenClicked.get()  == 0):
                 os.remove(self.postingPathTextField.get()+"/finalIndex.txt")
@@ -612,73 +575,76 @@ class Toplevel1:
             mylist.pack(side=tk.LEFT, fill=tk.BOTH)
             scrollbar.config(command=mylist.yview)
     def resultsQueryRegular(self):
-        if(self.win != None):
-            self.destroyMe()
-        self.win = tk.Toplevel()
-        self.win.geometry("800x420")
-        self.win.title("Results for query")
-        lb_header = ['No', 'File Name', 'Relevance', 'Entities']
-        ttk.Label(self.win, text="Query Results:", font="caliberi 34 bold").pack()
-        queryText = "query:'' " + str(self.singleQueryTextField.get()).replace(" ",",")+" ''"
-        ttk.Label(self.win, text=queryText, font="caliberi 12 bold").pack()
-        self.resTable = ttk.Treeview(self.win, selectmode='browse',columns=lb_header, show="headings")
-        # tree.grid(in_=self.Labelframe_results)
-        self.resTable.place(height=1870)
-        vsb = ttk.Scrollbar(self.win, orient="vertical", command=self.resTable.yview)
-        vsb.place(x=760, y=80, height=200)
-        self.resTable.configure(yscrollcommand=vsb.set)
-        i = 0
-        for col in lb_header:
-            self.resTable.heading(col, text=col.title())
-            self.resTable.column('No', width=25)
-            self.resTable.column('File Name', width=90)
-        self.resTable.column('Relevance', width=90)
-        self.resTable.column('Entities', width=210)
+        if(self.singleQueryTextField.get() != ""):
+            if(self.win != None):
+                self.destroyMe()
+            self.win = tk.Toplevel()
+            self.win.geometry("800x420")
+            self.win.title("Results for query")
+            lb_header = ['No', 'File Name', 'Relevance', 'Entities']
+            ttk.Label(self.win, text="Query Results:", font="caliberi 34 bold").pack()
+            queryText = "query:'' " + str(self.singleQueryTextField.get()).replace(" ",",")+" ''"
+            ttk.Label(self.win, text=queryText, font="caliberi 12 bold").pack()
+            self.resTable = ttk.Treeview(self.win, selectmode='browse',columns=lb_header, show="headings")
+            # tree.grid(in_=self.Labelframe_results)
+            self.resTable.place(height=1870)
+            vsb = ttk.Scrollbar(self.win, orient="vertical", command=self.resTable.yview)
+            vsb.place(x=760, y=80, height=200)
+            self.resTable.configure(yscrollcommand=vsb.set)
+            i = 0
+            for col in lb_header:
+                self.resTable.heading(col, text=col.title())
+                self.resTable.column('No', width=25)
+                self.resTable.column('File Name', width=90)
+            self.resTable.column('Relevance', width=90)
+            self.resTable.column('Entities', width=210)
 
-        self.resTable.delete(*self.resTable.get_children())
-        i = 1
-        self.preSave=[]
-        self.preSave.clear()
-        if (self.semanticCheckBoxV.get() == 1):
-            self.loaded.doSemantics = 1
+            self.resTable.delete(*self.resTable.get_children())
+            i = 1
+            self.preSave=[]
+            self.preSave.clear()
+            if (self.semanticCheckBoxV.get() == 1):
+                self.loaded.doSemantics = 1
+            else:
+                self.loaded.doSemantics = 0
+            if (self.onlyCitiesRes.get() == 1):
+                self.loaded.citiesList = self.selectedItemInCitiesList()
+            else:
+                self.loaded.citiesList = None
+            if (self.entitiesCheckBoxV.get() == 1):
+                self.loaded.showEntities = self.entitiesCheckBoxV.get()
+                dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
+                for item in dict:
+                    self.resTable.insert('', 'end', values=(i, item[0], item[1], dict[item]))
+                    self.preSave.append(str(self.IDQ) + " 0 "+item[0]+" 1 "+str(round(item[1],4))+" oi"+" \n")
+                    i = i + 1
+            else:
+                for item in self.loaded.singleQueryCalc(self.singleQueryTextField.get()):
+                    self.resTable.insert('', 'end', values=(i, item[0], item[1]))
+                    self.preSave.append(str(self.IDQ) + " 0 " + item[0] + " 1 " + str(round(item[1],4)) + " oi" + " \n")
+                    i = i + 1
+
+            self.resTable.pack(fill='x',padx=20)
+
+            # self.saveResultsButton = ttk.Button(self.win)
+            # self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
+            #                              , bordermode='ignore')
+            # self.saveResultsButton.configure(takefocus="")
+            # self.saveResultsButton.configure(text='''Save results''')
+            # self.saveResultsButton.configure(command=self.saveRes)
+            # if(i == 1):
+            #     self.saveResultsButton.configure(state='disabled')
+            # self.saveResultsButton.pack()
+
+            self.exitButton = ttk.Button(self.win)
+            self.exitButton.place(relx=0.635, rely=0.093, height=25, width=76
+                                         , bordermode='ignore')
+            self.exitButton.configure(takefocus="")
+            self.exitButton.configure(text='''Exit''')
+            self.exitButton.configure(command=self.destroyMe)
+            self.exitButton.pack()
         else:
-            self.loaded.doSemantics = 0
-        if (self.onlyCitiesRes.get() == 1):
-            self.loaded.citiesList = self.selectedItemInCitiesList()
-        else:
-            self.loaded.citiesList = None
-        if (self.entitiesCheckBoxV.get() == 1):
-            self.loaded.showEntities = self.entitiesCheckBoxV.get()
-            dict = self.loaded.singleQueryCalc(self.singleQueryTextField.get())
-            for item in dict:
-                self.resTable.insert('', 'end', values=(i, item[0], item[1], dict[item]))
-                self.preSave.append(str(self.IDQ) + " 0 "+item[0]+" 1 "+str(round(item[1],4))+" oi"+" \n")
-                i = i + 1
-        else:
-            for item in self.loaded.singleQueryCalc(self.singleQueryTextField.get()):
-                self.resTable.insert('', 'end', values=(i, item[0], item[1]))
-                self.preSave.append(str(self.IDQ) + " 0 " + item[0] + " 1 " + str(round(item[1],4)) + " oi" + " \n")
-                i = i + 1
-
-        self.resTable.pack(fill='x',padx=20)
-
-        # self.saveResultsButton = ttk.Button(self.win)
-        # self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
-        #                              , bordermode='ignore')
-        # self.saveResultsButton.configure(takefocus="")
-        # self.saveResultsButton.configure(text='''Save results''')
-        # self.saveResultsButton.configure(command=self.saveRes)
-        # if(i == 1):
-        #     self.saveResultsButton.configure(state='disabled')
-        # self.saveResultsButton.pack()
-
-        self.exitButton = ttk.Button(self.win)
-        self.exitButton.place(relx=0.635, rely=0.093, height=25, width=76
-                                     , bordermode='ignore')
-        self.exitButton.configure(takefocus="")
-        self.exitButton.configure(text='''Exit''')
-        self.exitButton.configure(command=self.destroyMe)
-        self.exitButton.pack()
+            messagebox.showerror('oops!', 'Please insert a query for search!')
 
 
     def resultsQueryMulti(self):
