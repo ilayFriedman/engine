@@ -159,6 +159,11 @@ class ReadFile:
             with open(self.pathToWrite + "/" + "citiesIndex" + ".ujson", "w+") as cityIndex:
                 ujson.dump(self.indexer.citiesIndex, cityIndex)
             cityIndex.close()
+        with open(self.pathToWrite + "/" + "languageList.txt", "w+") as langs:
+            setL = set(self.langList)
+            for item in setL:
+                langs.write(item+"\n")
+            langs.close()
 
     def makeStemList(self, afterParse):
         ps = PorterStemmer()

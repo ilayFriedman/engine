@@ -66,6 +66,7 @@ class Toplevel1:
         self.engineReadFile=None
         self.win=None
         self.Multiwin=None
+        self.languageList = None
         self.IDQ = 0
         self.idQ = 999
         self.selectQ = ""
@@ -282,6 +283,15 @@ class Toplevel1:
         self.CitiesLable.configure(relief='flat')
         self.CitiesLable.configure(text='''List of cities:''')
 
+        self.LanguagesLable = ttk.Label(self.Labelframe_queryField)
+        self.LanguagesLable.place(relx=0.490, rely=0.650, height=24
+                , bordermode='ignore')
+        self.LanguagesLable.configure(background="#d9d9d9")
+        self.LanguagesLable.configure(foreground="#000000")
+        self.LanguagesLable.configure(font=font11)
+        self.LanguagesLable.configure(relief='flat')
+        self.LanguagesLable.configure(text='''List of Languages:''')
+
         self.style.map('TCheckbutton',background=
             [('selected', _bgcolor), ('active', _ana2color)])
         self.lab66_tCh84 = ttk.Checkbutton(self.Labelframe_queryField)
@@ -383,10 +393,13 @@ class Toplevel1:
         self.StemmingCheckBox.configure(text='''Stemming?''')
         self.doStemmingV = tk.IntVar()
         self.StemmingCheckBox.configure(variable=self.doStemmingV)
+        self.doStemmingVwhenClicked = self.doStemmingV
 
 
-        self.TcomboBoxLanguages = ttk.Combobox(top)
+        self.TcomboBoxLanguages = ttk.Combobox(top ,state='readonly')
         self.TcomboBoxLanguages.place(relx=0.489, rely=0.876)
+
+
 
         self.menubar = tk.Menu(top,font="TkMenuFont",bg=_bgcolor,fg=_fgcolor)
         top.configure(menu = self.menubar)
@@ -430,6 +443,13 @@ class Toplevel1:
                 self.entitiesCheckBox.configure(state='normal')
                 self.loadPostingAndDict()
                 self.addCities()
+                if (os.path.exists(self.postingPathTextField.get() + "/languageList.txt")):
+                    with open(self.postingPathTextField.get() + "/languageList.txt", "r+") as file:
+                        self.languageList = file.readlines()
+                        file.close()
+
+                    self.TcomboBoxLanguages.configure(values=self.languageList)
+                    self.TcomboBoxLanguages.current(0)
                 self.loadedLable.configure(foreground="#000000")
 
                 self.loaded = Searcher(self.corpusPathTextField.get()+"/stop_words.txt"
@@ -464,6 +484,7 @@ class Toplevel1:
         self.doStemmingVwhenClicked = self.doStemmingV
 
     def generateIndex(self):
+
         self.loadedLable.configure(foreground="#d9d9d9")
         self.allTermsButton.configure(state='disabled')
         self.singleQuerySearchButton.configure(state='disabled')
@@ -508,6 +529,8 @@ class Toplevel1:
                     if(os.path.exists(self.postingPathTextField.get()+"/baseDict.ujson")):
                         override = True
                         os.remove(self.postingPathTextField.get()+"/baseDict.ujson")
+                if (os.path.exists(self.postingPathTextField.get() + "/languageList.txt")):
+                    os.remove(self.postingPathTextField.get() + "/languageList.txt")
                 os.makedirs(self.postingPathTextField.get() + "/tempDir")
                 engineReadFile = ReadFile(self.corpusPathTextField.get(),self.postingPathTextField.get() + "/tempDir")
                 if (self.doStemmingV.get() == 1):
@@ -543,7 +566,8 @@ class Toplevel1:
             i=i+1
     def resetAll(self):
         try:
-            if(self.doStemmingVwhenClicked.get() == 0):
+            self.doStemmingVwhenClicked = self.doStemmingV
+            if(self.doStemmingVwhenClicked.get()  == 0):
                 os.remove(self.postingPathTextField.get()+"/finalIndex.txt")
                 os.remove(self.postingPathTextField.get()+"/fileIndex.ujson")
                 os.remove(self.postingPathTextField.get()+"/citiesIndex.ujson")
@@ -555,7 +579,7 @@ class Toplevel1:
                 os.remove(self.postingPathTextField.get()+"/S_citiesIndex.ujson")
                 os.remove(self.postingPathTextField.get()+"/S_baseDict.ujson")
                 string = "*STEMMING* Index Files deleted!\nEverything reset"
-            self.saveResultsButton.configure(state='disabled')
+            # self.saveResultsButton.configure(state='disabled')
             self.allTermsButton.configure(state='disabled')
             self.singleQuerySearchButton.configure(state='disabled')
             self.singleQueryTextField.configure(state='disabled')
@@ -569,7 +593,6 @@ class Toplevel1:
             self.corpusPathTextField.delete(0,'end')
             self.doStemmingV.set(0)
             self.citiesList.delete(0,'end')
-            self.tree.delete(*self.tree.get_children())
             messagebox.showinfo("All Reset!",string)
         except:
             messagebox.showerror('oops!', 'Something worng!\n Check if the files is not already deleted! ')
@@ -639,15 +662,15 @@ class Toplevel1:
 
         self.resTable.pack(fill='x',padx=20)
 
-        self.saveResultsButton = ttk.Button(self.win)
-        self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
-                                     , bordermode='ignore')
-        self.saveResultsButton.configure(takefocus="")
-        self.saveResultsButton.configure(text='''Save results''')
-        self.saveResultsButton.configure(command=self.saveRes)
-        if(i == 1):
-            self.saveResultsButton.configure(state='disabled')
-        self.saveResultsButton.pack()
+        # self.saveResultsButton = ttk.Button(self.win)
+        # self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
+        #                              , bordermode='ignore')
+        # self.saveResultsButton.configure(takefocus="")
+        # self.saveResultsButton.configure(text='''Save results''')
+        # self.saveResultsButton.configure(command=self.saveRes)
+        # if(i == 1):
+        #     self.saveResultsButton.configure(state='disabled')
+        # self.saveResultsButton.pack()
 
         self.exitButton = ttk.Button(self.win)
         self.exitButton.place(relx=0.635, rely=0.093, height=25, width=76
@@ -753,7 +776,6 @@ class Toplevel1:
         self.idQ = str(list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][0])
         self.selectQ = list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][1]
         i=1
-        print(self.dictRes)
         if (self.entitiesCheckBoxV.get() ==0):
             for item in self.dictRes[(self.idQ,self.selectQ)]:
                 self.MresTable.insert('', 'end', values=(i, item[0], item[1]))
