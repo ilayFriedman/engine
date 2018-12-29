@@ -67,7 +67,10 @@ class Toplevel1:
         self.win=None
         self.Multiwin=None
         self.languageList = None
+        self.itemLineEnt = None
         self.IDQ = 0
+        self.winE = None
+        self.winES = None
         self.idQ = 999
         self.selectQ = ""
         font9 = "-family {Segoe UI} -size 9 -weight bold -slant roman "  \
@@ -588,6 +591,7 @@ class Toplevel1:
             self.resTable = ttk.Treeview(self.win, selectmode='browse',columns=lb_header, show="headings")
             # tree.grid(in_=self.Labelframe_results)
             self.resTable.place(height=1870)
+            self.resTable.bind("<Double-1>", self.showEntSIngle)
             vsb = ttk.Scrollbar(self.win, orient="vertical", command=self.resTable.yview)
             vsb.place(x=760, y=80, height=200)
             self.resTable.configure(yscrollcommand=vsb.set)
@@ -626,15 +630,15 @@ class Toplevel1:
 
             self.resTable.pack(fill='x',padx=20)
 
-            # self.saveResultsButton = ttk.Button(self.win)
-            # self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
-            #                              , bordermode='ignore')
-            # self.saveResultsButton.configure(takefocus="")
-            # self.saveResultsButton.configure(text='''Save results''')
-            # self.saveResultsButton.configure(command=self.saveRes)
-            # if(i == 1):
-            #     self.saveResultsButton.configure(state='disabled')
-            # self.saveResultsButton.pack()
+            self.saveResultsButton = ttk.Button(self.win)
+            self.saveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
+                                         , bordermode='ignore')
+            self.saveResultsButton.configure(takefocus="")
+            self.saveResultsButton.configure(text='''Save results''')
+            self.saveResultsButton.configure(command=self.saveRes)
+            if(i == 1):
+                self.saveResultsButton.configure(state='disabled')
+            self.saveResultsButton.pack()
 
             self.exitButton = ttk.Button(self.win)
             self.exitButton.place(relx=0.635, rely=0.093, height=25, width=76
@@ -644,7 +648,7 @@ class Toplevel1:
             self.exitButton.configure(command=self.destroyMe)
             self.exitButton.pack()
         else:
-            messagebox.showerror('oops!', 'Please insert a query for search!')
+            messagebox.showerror('oops!', 'Please insert a query for search! ')
 
 
     def resultsQueryMulti(self):
@@ -690,7 +694,8 @@ class Toplevel1:
 
         ############################
         lb_header1 = ['No', 'File Name', 'Relevance', 'Entities']
-        ttk.Label(self.Multiwin, text="\nresults for query:", font="caliberi 12 bold").pack()
+        ttk.Label(self.Multiwin, text="results for query:", font="caliberi 12 bold").pack()
+        ttk.Label(self.Multiwin, text="Double click on line to see entities", font="caliberi 11").pack()
         self.MresTable = ttk.Treeview(self.Multiwin, selectmode='browse', columns=lb_header1, show="headings")
         # tree.grid(in_=self.Labelframe_results)
         self.MresTable.place(height=1870)
@@ -706,6 +711,7 @@ class Toplevel1:
         self.MresTable.column('Entities', width=210)
 
         self.MresTable.pack(fill='x', padx=20)
+        self.MresTable.bind("<Double-1>", self.openEnt)
 
         self.MsaveResultsButton = ttk.Button(self.Multiwin)
         self.MsaveResultsButton.place(relx=0.735, rely=0.093, height=25, width=76
@@ -736,9 +742,12 @@ class Toplevel1:
         self.MexitButton.pack()
 
     def OnDoubleClick(self,event):
+
         self.preSave=[]
         self.preSave.clear()
         self.MresTable.delete(*self.MresTable.get_children())
+        if(len(list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2]) == 0):
+            self.MsaveResultsButton.configure(state='disabled')
         self.idQ = str(list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][0])
         self.selectQ = list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][1]
         i=1
@@ -763,11 +772,18 @@ class Toplevel1:
             self.MsaveResultsButton.configure(state='normal')
         self.MsaveResultsButton.pack()
     def destroyMe(self):
+        if(self.winES !=None):
+            self.winES.destroy()
+            self.winES = None
         self.win.destroy()
         self.win=None
     def MdestroyMe(self):
+        if(self.winE !=None):
+            self.winE.destroy()
+            self.winE = None
         self.Multiwin.destroy()
         self.Multiwin=None
+
 
     def saveRes(self):
         pathForSave = askdirectory()
@@ -826,12 +842,62 @@ class Toplevel1:
         dirWind = tk.Tk()
         dirWind.withdraw()
         path = askopenfile()
-        path = path.name
-        if(len(str(self.multiQueryTextField.get())) != 0):
-            self.multiQueryTextField.delete(0, 'end')
         if(path != None):
-            self.multiQueryTextField.insert(0, str(path))
-        dirWind.destroy()
+            path = path.name
+            if(len(str(self.multiQueryTextField.get())) != 0):
+                self.multiQueryTextField.delete(0, 'end')
+            if(path != None):
+                self.multiQueryTextField.insert(0, str(path))
+            dirWind.destroy()
+
+    def openEnt(self,event):
+        if(self.winE != None):
+            self.winE.destroy()
+            self.winE=None
+        entList = ((list(self.MresTable.item(self.MresTable.focus()).values()))[2][3]).split()
+
+        self.winE = tk.Toplevel()
+        self.winE.geometry("300x220")
+        self.winE.title("Entities of this query")
+        scrollbar = tk.Scrollbar(self.winE)
+        scrollbar.pack(side='right', fill='y')
+        self.winE.configure(background='#000000')
+
+        mylist = tk.Listbox(self.winE, yscrollcommand=scrollbar.set, width=200)
+        mylist.insert(tk.END, (str(entList[0]) + " : " + (str(entList[1])) + "\n"))
+        mylist.insert(tk.END, (str(entList[2]) + " : " + (str(entList[3])) + "\n"))
+        mylist.insert(tk.END, (str(entList[4]) + " : " + (str(entList[5])) + "\n"))
+        mylist.insert(tk.END, (str(entList[6]) + " : " + (str(entList[7])) + "\n"))
+        mylist.insert(tk.END, (str(entList[8]) + " : " + (str(entList[9])) + "\n"))
+
+        mylist.pack(side=tk.LEFT, fill=tk.BOTH)
+        scrollbar.config(command=mylist.yview)
+
+
+
+    def showEntSIngle(self, event):
+        if (self.winES != None):
+            self.winES.destroy()
+            self.winES = None
+        entList = ((list(self.resTable.item(self.resTable.focus()).values()))[2][3]).split()
+
+        self.winES = tk.Toplevel()
+        self.winES.geometry("300x220")
+        self.winES.title("Entities of this query")
+        scrollbar = tk.Scrollbar(self.winES)
+        scrollbar.pack(side='right', fill='y')
+        self.winES.configure(background='#000000')
+
+        mylist = tk.Listbox(self.winES, yscrollcommand=scrollbar.set, width=200)
+        mylist.insert(tk.END, (str(entList[0]) + " : " + (str(entList[1])) + "\n"))
+        mylist.insert(tk.END, (str(entList[2]) + " : " + (str(entList[3])) + "\n"))
+        mylist.insert(tk.END, (str(entList[4]) + " : " + (str(entList[5])) + "\n"))
+        mylist.insert(tk.END, (str(entList[6]) + " : " + (str(entList[7])) + "\n"))
+        mylist.insert(tk.END, (str(entList[8]) + " : " + (str(entList[9])) + "\n"))
+
+        mylist.pack(side=tk.LEFT, fill=tk.BOTH)
+        scrollbar.config(command=mylist.yview)
+
 
 if __name__ == '__main__':
     vp_start_gui()
