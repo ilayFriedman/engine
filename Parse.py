@@ -17,7 +17,8 @@ class Parse:
         string4 = "June July JUNE JULY"
         string3 = "May MAY Jan Feb Mar Apr Jun Jul Aug Sep Oct Nov Dec"
 
-        stringTextList = re.split('[ \n]', re.sub("[*~@#^&;:!?\',(){}\[\]\"\=+]", " ", text))
+        stringTextList = re.split('[ \n]', re.sub("[*~@#^&;:!?\'(){}\[\]\"\=+]", " ", text))
+        stringTextList = re.split('[ \n]', re.sub("[,]", "", text))
         tokenList = []
         i = 0;
         elements = islice(stringTextList, 0, None)
@@ -45,7 +46,10 @@ class Parse:
                             'bn') == len(stringTextList[i]) - 2 and '-' not in stringTextList[i]) and (
                             (i + 1 < len(stringTextList) and stringTextList[i + 1] == "Dollars") and (
                             '.' in stringTextList[i] and stringTextList[i][:-(
-                            len(stringTextList[i]) - stringTextList[i].index('.'))].isdigit() and stringTextList[i][stringTextList[i].index('.') + 1:-2].isdigit() and
+                            len(stringTextList[i]) - stringTextList[i].index('.'))].isdigit() and stringTextList[i][
+                                                                                                  stringTextList[
+                                                                                                      i].index(
+                                                                                                      '.') + 1:-2].isdigit() and
                             stringTextList[i].index('.') != len(stringTextList[i]) - 1) or (
                                     '.' not in stringTextList[i] and stringTextList[i][:-2].isdigit())):
                         tokenList.append(str(float(float(stringTextList[i][:-2]) * 1000)) + " M Dollars")
@@ -122,7 +126,7 @@ class Parse:
                         if (part != ""):
                             stringTextList.append(part)
                     if (stringTextList[i].index('-') == 0 and stringTextList[i][1:].isdigit()):
-                        tokenList.append(str(stringTextList[i][1:]+"-"))
+                        tokenList.append(str(stringTextList[i][1:] + "-"))
 
                     if (stringTextList[i].index('-') != 0 and stringTextList[i].index('-') != len(
                             stringTextList[i]) - 1 and len(stringTextList[i]) != 1):
@@ -139,25 +143,28 @@ class Parse:
                         if (len(stringTextList[i - 1]) < 2):
                             tokenList.append(self.monthToNum(stringTextList[i]) + '-0' + stringTextList[i - 1])
                             tokenList.append(stringTextList[i])
-                            tokenList.append(stringTextList[i-1])
+                            tokenList.append(stringTextList[i - 1])
                         else:
                             tokenList.append(self.monthToNum(stringTextList[i]) + '-' + stringTextList[i - 1])
                             tokenList.append(stringTextList[i])
-                            tokenList.append(stringTextList[i-1])
+                            tokenList.append(stringTextList[i - 1])
                     elif (i + 1 < len(stringTextList) and stringTextList[i + 1].isdigit()):
                         if (len(stringTextList[i + 1]) < 2):
                             tokenList.append(self.monthToNum(stringTextList[i]) + '-0' + stringTextList[i + 1])
                             tokenList.append(stringTextList[i])
-                            tokenList.append(stringTextList[i+1])
+                            tokenList.append(stringTextList[i + 1])
                         else:
                             tokenList.append(self.monthToNum(stringTextList[i]) + '-' + stringTextList[i + 1])
                             tokenList.append(stringTextList[i])
-                            tokenList.append(stringTextList[i+1])
+                            tokenList.append(stringTextList[i + 1])
                     else:
                         tokenList.append(stringTextList[i])
 
-                elif (len(stringTextList[i]) > 0 and stringTextList[i][0] == '$'):
-                    curr = stringTextList[i][1:]
+                elif (len(stringTextList[i]) > 0 and (stringTextList[i][0] == '$' or "%" in stringTextList[i])):
+                    if (stringTextList[i][0] == '$'):
+                        curr = stringTextList[i][1:]
+                    elif ("%" in stringTextList[i]):
+                        curr = stringTextList[i][:-1]
                     if (('.' in curr) and (curr.count('.') == 1) and (
                             stringTextList[i].index('.') < (len(stringTextList[i]) - 1)) and
                             (curr.split('.')[1].isdigit() and curr.split('.')[0].isdigit())):
@@ -172,8 +179,14 @@ class Parse:
                             elif (stringTextList[i + 1] == "billion"):
                                 curr = curr + "000" + " M"
                                 i = i + 1
-                        tokenList.append(curr + " Dollars")
-                    elif (digits > 5 and digits < 10 and curr.isdigit()):
+                        if (stringTextList[i][0] == '$'):
+                            if (curr.isdigit() and digits > 3):
+                                curr = curr[:3] + "," + curr[-3:]
+                            tokenList.append(curr + " Dollars")
+                        elif ("%" in stringTextList[i]):
+
+                            tokenList.append(curr + "%")
+                    elif (stringTextList[i][0] == '$' and digits > 5 and digits < 10 and curr.isdigit()):
                         tokenList.append(str(float(stringTextList[i][1:]) / 1000000) + " M Dollars")
                 elif (stringTextList[i] == "between"):
                     iterNum = 0
@@ -192,14 +205,15 @@ class Parse:
                             tmp = tmp + " " + stringTextList[i + x]
                         tmp = tmp[1:]
                     tokenList.append(tmp)
-                elif (stringTextList[i] == "kgs" or stringTextList[i] == "Kgs") and (i != 0 and stringTextList[i-1].isdigit()):
+                elif (stringTextList[i] == "kgs" or stringTextList[i] == "Kgs") and (
+                        i != 0 and stringTextList[i - 1].isdigit()):
                     tokenList.append(stringTextList[i])
-                    tokenList.append(stringTextList[i-1] + " KG")
+                    tokenList.append(stringTextList[i - 1] + " KG")
                 elif stringTextList[i].isalpha():
                     tokenList.append(stringTextList[i])
 
-
             i = i + 1
+        #print(tokenList)
         return tokenList
 
     def monthToNum(self, month):

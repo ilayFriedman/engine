@@ -32,13 +32,9 @@ class Ranker:
                     inDocList[data[i]] = data[i + 1]
                     i += 2
                 cWD[word] = inDocList
-        mone = 0
-        wordInDoc = None
-        wordInQ = 0
+
         for doc in self.docIndex:
             currRankBM25 = 0
-            rankCosSim = 0
-
             docLen = self.docIndex[doc][4]
             for word in query:
                 if(word in self.baseIndex.keys()):

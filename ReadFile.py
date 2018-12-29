@@ -38,7 +38,7 @@ class ReadFile:
         self.citiesList = set(self.citiesList)
         stop = timeit.default_timer()  ## CLEAR PRINT!
         print("~### CITY READ ###~ : ", stop - self.start, "seconds")  ## CLEAR PRINT!
-        print(self.citiesList)
+        #print(self.citiesList)
         for root, dirs, files in os.walk(self.pathToRead):
             for file in files:
                 with open(os.path.join(root, file), "r") as auto:
@@ -116,6 +116,7 @@ class ReadFile:
             city = fileList[2]
             lang = fileList[3]
             afterParse = self.parser.parseText(text)
+            print (afterParse)
             if (self.do_Stemming):
                 afterParse = self.makeStemList(afterParse)
             self.indexer.tokenList = afterParse

@@ -18,12 +18,12 @@ class Searcher:
         self.citiesList = citiesList
         self.showEntities = showEntities
         self.doSemantics = doSemantics
-        with open("simDict.ujson", "r+") as Jfile:
+        with open("simDictS.ujson", "r+") as Jfile:
             self.similarityDict = ujson.load(Jfile)
         Jfile.close()
 
     def singleQueryCalc(self, query):
-        #print("LEN SIM: ", len(self.similarityDict))
+        print("LEN SIM: ", len(self.similarityDict))
         parseQuery = Parse(self.stopWords).parseText(query)
         self.ranker.query = parseQuery
         if(self.doSemantics == 1):
@@ -34,7 +34,7 @@ class Searcher:
                     for sim in self.similarityDict[w.lower()]:
                         if(sim[0] not in semanticQuery):
                             semanticQuery.append(sim[0])
-            print(semanticQuery)
+            #print(semanticQuery)
             resList = self.ranker.calculateRate(semanticQuery)
         else:
             resList = self.ranker.calculateRate(parseQuery)
@@ -56,10 +56,10 @@ class Searcher:
                 theRanking.append(i)
         # print(theRanking)
         if (self.showEntities == 1):
-            print(self.addEntities(theRanking))
+            #print(self.addEntities(theRanking))
             return self.addEntities(theRanking)
         else:
-            print(theRanking)
+            #print(theRanking)
             return theRanking
 
     def multiQueryCalc(self, queryFile):
@@ -114,14 +114,14 @@ class Searcher:
             else:
                 resultDict[(q,querysDict[q])] = theRanking
         self.createAnswerFile(resultDict)
-        print(resultDict)
+        #print(resultDict)
         return(resultDict)
 
     def createAnswerFile(self, results):
-        with open("ourAnswers3.txt","w+") as file:
+        with open("trec/ourAnswers.txt","w+") as file:
             for res in results.keys():
                 for i in results[res]:
-                    string = str(res) + " 0 " + i[0] + " 1"
+                    string = str(res[0]) + " 0 " + i[0] + " 1"
                     file.write(string + "\n")
             file.close()
 
