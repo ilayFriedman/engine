@@ -1,4 +1,5 @@
 import itertools
+import timeit
 from operator import itemgetter
 
 import ujson
@@ -18,7 +19,7 @@ class Searcher:
         self.citiesList = citiesList
         self.showEntities = showEntities
         self.doSemantics = doSemantics
-        with open("simDictS.ujson", "r+") as Jfile:
+        with open("simDictM.ujson", "r+") as Jfile:
             self.similarityDict = ujson.load(Jfile)
         Jfile.close()
 
@@ -63,6 +64,7 @@ class Searcher:
             return theRanking
 
     def multiQueryCalc(self, queryFile):
+        start = timeit.default_timer()
         querysDict = {}
         resultDict = {}
         with open(queryFile, "r+") as querysFile:
@@ -115,6 +117,8 @@ class Searcher:
                 resultDict[(q,querysDict[q])] = theRanking
         self.createAnswerFile(resultDict)
         #print(resultDict)
+        stop = timeit.default_timer()
+        print("### Time to Answer ###", stop - start, "seconds")
         return(resultDict)
 
     def createAnswerFile(self, results):

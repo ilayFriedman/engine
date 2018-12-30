@@ -60,23 +60,24 @@ class Ranker:
         return res
 
     def readFromFile(self, token):
-        if(token in self.baseIndex):
-            offset = self.baseIndex[token][0]
-            size = self.baseIndex[token][1]
-        elif(token.upper() in self.baseIndex):
-            offset = self.baseIndex[token.upper()][0]
-            size = self.baseIndex[token.upper()][1]
-        elif(token.lower() in self.baseIndex):
-            offset = self.baseIndex[token.lower()][0]
-            size = self.baseIndex[token.lower()][1]
-        else:
-            return None
         indexName = ""
         if (self.doStem == 1):
             indexName = "S_finalIndex"
         else:
             indexName = "finalIndex"
-        with open(self.postPath + "/"+indexName + ".txt", "r+") as index:
+        with open(self.postPath + "/" + indexName + ".txt", "r+") as index:
+            data = ""
+            if(token in self.baseIndex):
+                offset = self.baseIndex[token][0]
+                size = self.baseIndex[token][1]
+            elif(token.upper() in self.baseIndex):
+                offset = self.baseIndex[token.upper()][0]
+                size = self.baseIndex[token.upper()][1]
+            elif(token.lower() in self.baseIndex):
+                offset = self.baseIndex[token.lower()][0]
+                size = self.baseIndex[token.lower()][1]
+            else:
+                return None
             index.seek(offset)
             data = index.read(size)
             return (data)
