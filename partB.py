@@ -393,7 +393,9 @@ class Toplevel1:
                 os.path.isdir (self.postingPathTextField.get()) == False):
             messagebox.showerror('oops!', 'Please insert a valid source path!')
         else:
-            if(os.path.exists(self.postingPathTextField.get()+"/finalIndex.txt") == False or os.path.exists(self.postingPathTextField.get() + "/citiesIndex.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/baseDict.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/fileIndex.ujson") == False ):
+            if(self.doStemmingV.get() ==1 and(os.path.exists(self.postingPathTextField.get()+"/S_finalIndex.txt") == False or os.path.exists(self.postingPathTextField.get() + "/S_citiesIndex.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/S_baseDict.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/S_fileIndex.ujson") == False )):
+                messagebox.showerror('oops!', 'Cannot find files to load \nmake sure you generated them first!\n(or write another path)')
+            elif(self.doStemmingV.get() ==0 and(os.path.exists(self.postingPathTextField.get()+"/finalIndex.txt") == False or os.path.exists(self.postingPathTextField.get() + "/citiesIndex.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/baseDict.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/fileIndex.ujson") == False )):
                 messagebox.showerror('oops!', 'Cannot find files to load \nmake sure you generated them first!\n(or write another path)')
             else:
                 self.allTermsButton.configure(state='normal')
@@ -417,7 +419,7 @@ class Toplevel1:
                 self.loadedLable.configure(foreground="#000000")
 
                 self.loaded = Searcher(self.corpusPathTextField.get()+"/stop_words.txt"
-                                       ,self.postingPathTextField.get(),self.doStemmingV,self.ReadBaseDict,self.ReadFileIndex,self.entitiesCheckBoxV,self.semanticCheckBoxV)
+                                       ,self.postingPathTextField.get(),self.doStemmingV.get(),self.ReadBaseDict,self.ReadFileIndex,self.entitiesCheckBoxV.get(),self.semanticCheckBoxV.get())
 
     def resetQueryAera(self):
         self.singleQueryTextField.delete(0, 'end')

@@ -53,7 +53,7 @@ class Ranker:
                         elif(word in queryList[1]):
                             currRankBM25 += (self.bmCalc(1, currCWD, docLen, currDF,0.75,1.85))*0.6
                         elif(word in queryList[2]):
-                            currRankBM25 += (self.bmCalc(1, currCWD, docLen, currDF, 0.75, 1.8))*(1/3.5)
+                            currRankBM25 += (self.bmCalc(1, currCWD, docLen, currDF, 0.75, 1.2))*(1/3.5)
             if(currRankBM25 != 0 ):
                 resultDict[doc] = currRankBM25
         bestRank = OrderedDict(sorted(resultDict.items(), key = itemgetter(1), reverse = True))

@@ -9,9 +9,9 @@ from operator import itemgetter
 from Searcher import Searcher
 #import gensim.models
 
-citiesfile = open("post/citiesIndex.ujson", "r+")
-baseFile = open("post/baseDict.ujson", "r+")
-fileFile = open("post/fileIndex.ujson", "r+")
+citiesfile = open("post/S_citiesIndex.ujson", "r+")
+baseFile = open("post/S_baseDict.ujson", "r+")
+fileFile = open("post/S_fileIndex.ujson", "r+")
 ReadCitiesIndex = ujson.load(citiesfile)
 ReadBaseDict = ujson.load(baseFile)
 ReadFileIndex = ujson.load(fileFile)
@@ -19,8 +19,8 @@ citiesfile.close()
 baseFile.close()
 fileFile.close()
 
-searcher = Searcher("/stop_words.txt", "post", False,ReadBaseDict,ReadFileIndex,
-                    False, False)
+searcher = Searcher("/stop_words.txt", "post", True ,ReadBaseDict,ReadFileIndex,
+                    False, True)
 #q = searcher.singleQueryCalc("Falkland")
 start = timeit.default_timer()
 q = searcher.multiQueryCalc("queries.txt")
