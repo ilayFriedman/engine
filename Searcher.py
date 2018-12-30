@@ -1,5 +1,6 @@
 import itertools
 import timeit
+from collections import defaultdict
 from operator import itemgetter
 
 import ujson
@@ -15,7 +16,6 @@ class Searcher:
         self.stopWords = stopWords
         self.citiesList = citiesList
         self.ranker = Ranker(self.baseDic, self.fileIndex, postPath, doStem)
-        self.stopWords = stopWords
         self.citiesList = citiesList
         self.showEntities = showEntities
         self.doSemantics = doSemantics
@@ -65,33 +65,49 @@ class Searcher:
 
     def multiQueryCalc(self, queryFile):
         start = timeit.default_timer()
-        querysDict = {}
+        querysDict = defaultdict(list)
         resultDict = {}
         with open(queryFile, "r+") as querysFile:
             inPart = False
+            startDescReading=False
             queryText = ""
             queryNum = ""
+            descText=""
 
             for line in querysFile:
                 if (inPart):
-                    querysDict[queryNum] = queryText
+                    querysDict[queryNum][0] = queryText
+                    querysDict[queryNum][1] = descText
+                    del descText
                     inPart = False
                 if ("<num>" in line):
                     queryNum = line[line.index('>') + 1:].split(": ")[1].strip()
                 elif ("<title>" in line):
                     queryText = (line[line.index('>') + 1:].strip())
+                elif("<narr>" in line):
+                    startDescReading=False
                     inPart = True
+                elif(startDescReading):
+                    descText += line.strip()+" "
+                elif ("<desc>" in line):
+                    startDescReading=True
+
             querysFile.close()
+        destStopWords =["etc.", "i.e", "considered", "information", "documents", "document", "discussing", "discuss", "following",
+         "issues", "identify", "find", "must"]
         for q in querysDict:
-            parseQuery = Parse(self.stopWords).parseText(querysDict[q])
+            parseQuery = Parse(self.stopWords).parseText(querysDict[q][0])
+            parseQuery += Parse(list(set().union(self.stopWords,destStopWords))).parseText(querysDict[q][1])
             if (self.doSemantics == 1):
-                semanticQuery = []
+                #semanticQuery = []
                 for w in parseQuery:
-                    semanticQuery.append(w)
+                    #semanticQuery.append(w)
                     if (w.lower() in self.similarityDict):
                         for sim in self.similarityDict[w.lower()]:
-                            if (sim[0] not in semanticQuery):
-                                semanticQuery.append(sim[0])
+                            if (sim[0] not in querysDict[q][2]):
+                                #semanticQuery.append(sim[0])
+
+
                 #print(semanticQuery)
                 resList = self.ranker.calculateRate(semanticQuery)
             else:
@@ -112,9 +128,9 @@ class Searcher:
                 for doc in x:
                     theRanking.append(doc)
             if (self.showEntities == 1):
-                resultDict[(q,querysDict[q])] = self.addEntities(theRanking)
+                resultDict[(q,querysDict[q][0])] = self.addEntities(theRanking)
             else:
-                resultDict[(q,querysDict[q])] = theRanking
+                resultDict[(q,querysDict[q][0])] = theRanking
         self.createAnswerFile(resultDict)
         #print(resultDict)
         stop = timeit.default_timer()
