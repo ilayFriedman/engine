@@ -17,42 +17,51 @@ class Ranker:
         self.avdl = self.avdl / len(self.docIndex.keys())
         self.docNum = len(self.docIndex.keys())
 
-    def calculateRate(self,query):
+    def calculateRate(self,queryList):
         resultDict = {}
-        counter = Counter(query)
+        counter = Counter(queryList[0])
         cWD = {}
-        for word in query:
-            data = self.readFromFile(word)
-            if(data != None):
-                data = re.sub("[\[\]\"\']", "", data)
-                data = data.split(", ")
-                inDocList = {}
-                i = 0
-                while (i < (len(data) - 1)):
-                    inDocList[data[i]] = data[i + 1]
-                    i += 2
-                cWD[word] = inDocList
+        for list in queryList:
+            list = set(list)
+            for word in list:
+                if(word not in cWD):
+                    data = self.readFromFile(word)
+                    if(data != None):
+                        data = re.sub("[\[\]\"\']", "", data)
+                        data = data.split(", ")
+                        inDocList = {}
+                        i = 0
+                        while (i < (len(data) - 1)):
+                            inDocList[data[i]] = data[i + 1]
+                            i += 2
+                        cWD[word] = inDocList
 
         for doc in self.docIndex:
             currRankBM25 = 0
             docLen = self.docIndex[doc][4]
-            for word in query:
-                if(word in self.baseIndex.keys()):
-                    currDF = self.baseIndex[word][3]
+            for word in queryList[3]:
+                if(word.lower() in self.baseIndex.keys()):
+                    currDF = self.baseIndex[word.lower()][3]
+                elif (word.upper() in self.baseIndex.keys()):
+                    currDF = self.baseIndex[word.upper()][3]
                 else: currDF = 0
                 if(word in cWD and cWD[word] != None):
                     if (doc in cWD[word]):
                         currCWD = cWD[word][doc]
-                        currRankBM25 += self.bmCalc(counter[word], currCWD, docLen, currDF)
+                        if(word in queryList[0]):
+                            currRankBM25 += self.bmCalc(counter[word], currCWD, docLen, currDF, 0.75,1.9)
+                        elif(word in queryList[1]):
+                            currRankBM25 += (self.bmCalc(1, currCWD, docLen, currDF,0.75,1.85))*0.6
+                        elif(word in queryList[2]):
+                            currRankBM25 += (self.bmCalc(1, currCWD, docLen, currDF, 0.75, 1.8))*(1/3.5)
             if(currRankBM25 != 0 ):
                 resultDict[doc] = currRankBM25
         bestRank = OrderedDict(sorted(resultDict.items(), key = itemgetter(1), reverse = True))
         return(bestRank)
 
 
-    def bmCalc(self, cWQ, cWD, docLen, df):
-        k = 2.0
-        b = 0.75
+    def bmCalc(self, cWQ, cWD, docLen, df, b, k):
+
         res = ((k + 1) * float(cWD)) / (float(cWD) + (k * (1 - b + (b * (float(docLen) / float(self.avdl))))))
         res = res *float(cWQ)
         if(df != 0):
