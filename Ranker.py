@@ -1,6 +1,6 @@
 import re
 import timeit
-from collections import Counter, defaultdict, OrderedDict
+from collections import Counter, OrderedDict
 from operator import itemgetter
 
 import math

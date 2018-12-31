@@ -56,12 +56,12 @@ class Searcher:
                 for doc in resList:
                     if (self.fileIndex[doc][2] == city):
                         tmpDict[doc] = resList[doc]
-                x = itertools.islice(tmpDict.items(), 0, 1200)
+                x = itertools.islice(tmpDict.items(), 0, 50)
                 theRanking.clear()
                 for i in x:
                     theRanking.append(i)
         else:
-            x = itertools.islice(resList.items(), 0, 1200)
+            x = itertools.islice(resList.items(), 0, 50)
             for i in x:
                 theRanking.append(i)
         # print(theRanking)
@@ -145,7 +145,6 @@ class Searcher:
                         if (self.fileIndex[doc][2] == city):
                             tmpDict[doc] = resList[doc]
                     x = itertools.islice(tmpDict.items(), 0, 50)
-                    del theRanking
                     for i in x:
                         theRanking.append(i)
             else:

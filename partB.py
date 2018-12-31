@@ -665,7 +665,7 @@ class Toplevel1:
         lb_header = ['Query ID', 'Query']
         ttk.Label(self.Multiwin, text="Multi Queries Results:", font="caliberi 34 bold").pack()
         ttk.Label(self.Multiwin, text="list of Queries in file:", font="caliberi 11 bold").pack()
-        ttk.Label(self.Multiwin, text="Double click on query wll show her results", font="caliberi 10").pack()
+        ttk.Label(self.Multiwin, text="Double click on query wll show it's results", font="caliberi 10").pack()
         self.QureyIDTable = ttk.Treeview(self.Multiwin, selectmode='browse',columns=lb_header, show="headings")
         # tree.grid(in_=self.Labelframe_results)
         self.QureyIDTable.place(height=1870)
