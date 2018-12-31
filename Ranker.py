@@ -19,23 +19,24 @@ class Ranker:
 
     def calculateRate(self,queryList, isMulti):
         resultDict = {}
-        counter = Counter(queryList[0])
+
         cWD = {}
-        for list in queryList:
-            list = set(list)
-            for word in list:
-                if(word not in cWD):
-                    data = self.readFromFile(word)
-                    if(data != None):
-                        data = re.sub("[\[\]\"\']", "", data)
-                        data = data.split(", ")
-                        inDocList = {}
-                        i = 0
-                        while (i < (len(data) - 1)):
-                            inDocList[data[i]] = data[i + 1]
-                            i += 2
-                        cWD[word] = inDocList
         if(isMulti):
+            counter = Counter(queryList[0])
+            for list in queryList:
+                list = set(list)
+                for word in list:
+                    if (word not in cWD):
+                        data = self.readFromFile(word)
+                        if (data != None):
+                            data = re.sub("[\[\]\"\']", "", data)
+                            data = data.split(", ")
+                            inDocList = {}
+                            i = 0
+                            while (i < (len(data) - 1)):
+                                inDocList[data[i]] = data[i + 1]
+                                i += 2
+                            cWD[word] = inDocList
             for doc in self.docIndex:
                 currRankBM25 = 0
                 docLen = self.docIndex[doc][4]
@@ -57,6 +58,19 @@ class Ranker:
                 if(currRankBM25 != 0 ):
                     resultDict[doc] = currRankBM25
         else:
+            counter = Counter(queryList)
+            for word in queryList:
+                if (word not in cWD):
+                    data = self.readFromFile(word)
+                    if (data != None):
+                        data = re.sub("[\[\]\"\']", "", data)
+                        data = data.split(", ")
+                        inDocList = {}
+                        i = 0
+                        while (i < (len(data) - 1)):
+                            inDocList[data[i]] = data[i + 1]
+                            i += 2
+                        cWD[word] = inDocList
             for doc in self.docIndex:
                 currRankBM25 = 0
                 docLen = self.docIndex[doc][4]

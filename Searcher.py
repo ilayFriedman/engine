@@ -26,7 +26,7 @@ class Searcher:
         self.citiesList = citiesList
         self.showEntities = showEntities
         self.doSemantics = doSemantics
-        with open(postPath+"simDictXL.ujson", "r+") as Jfile:
+        with open(postPath+"/simDictXL.ujson", "r+") as Jfile:
             self.similarityDict = ujson.load(Jfile)
         Jfile.close()
 
