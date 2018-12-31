@@ -219,7 +219,7 @@ class Toplevel1:
         self.generateIndexButton.configure(width=131)
 
         self.Labelframe_queryField = tk.LabelFrame(top)
-        self.Labelframe_queryField.place(relx=0.027, rely=0.594, relheight=0.359
+        self.Labelframe_queryField.place(relx=0.027, rely=0.554, relheight=0.410
                 , relwidth=0.941)
         self.Labelframe_queryField.configure(relief='groove')
         self.Labelframe_queryField.configure(foreground="black")
@@ -282,17 +282,16 @@ class Toplevel1:
         self.multiQuerySeachButton.configure(command=self.resultsQueryMulti)
 
         self.CitiesLable = ttk.Label(self.Labelframe_queryField)
-        self.CitiesLable.place(relx=0.725, rely=0.114, height=24, width=85
+        self.CitiesLable.place(relx=0.725, rely=0.1, height=24
                 , bordermode='ignore')
         self.CitiesLable.configure(background="#d9d9d9")
         self.CitiesLable.configure(foreground="#000000")
         self.CitiesLable.configure(font=font11)
         self.CitiesLable.configure(relief='flat')
-        self.CitiesLable.configure(text='''List of cities:''')
+        self.CitiesLable.configure(text='''List of Cities:''')
 
         self.LanguagesLable = ttk.Label(self.Labelframe_queryField)
-        self.LanguagesLable.place(relx=0.490, rely=0.650, height=24
-                , bordermode='ignore')
+        self.LanguagesLable.place(relx=0.01, rely=0.8, height=24)
         self.LanguagesLable.configure(background="#d9d9d9")
         self.LanguagesLable.configure(foreground="#000000")
         self.LanguagesLable.configure(font=font11)
@@ -302,7 +301,7 @@ class Toplevel1:
         self.style.map('TCheckbutton',background=
             [('selected', _bgcolor), ('active', _ana2color)])
         self.lab66_tCh84 = ttk.Checkbutton(self.Labelframe_queryField)
-        self.lab66_tCh84.place(relx=0.014, rely=0.686, relwidth=0.322
+        self.lab66_tCh84.place(relx=0.725, rely=0.2
                 , relheight=0.0, height=21, bordermode='ignore')
         self.lab66_tCh84.configure(takefocus="")
         self.lab66_tCh84.configure(text='''Show results only from selected Cities''')
@@ -321,7 +320,7 @@ class Toplevel1:
         self.semanticCheckBox.configure(state='disabled')
 
         self.entitiesCheckBox = ttk.Checkbutton(self.Labelframe_queryField)
-        self.entitiesCheckBox.place(relx=0.014, rely=0.8, relwidth=0.262
+        self.entitiesCheckBox.place(relx=0.014, rely=0.65, relwidth=0.262
                 , relheight=0.0, height=21, bordermode='ignore')
         # self.entitiesCheckBox.configure(variable=partB_support.entitiesResV)
         self.entitiesCheckBoxV = tk.IntVar()
@@ -361,7 +360,7 @@ class Toplevel1:
 
 
         self.TcomboBoxLanguages = ttk.Combobox(top ,state='readonly')
-        self.TcomboBoxLanguages.place(relx=0.489, rely=0.876)
+        self.TcomboBoxLanguages.place(relx=0.18, rely=0.886)
 
 
 
@@ -593,7 +592,8 @@ class Toplevel1:
             self.resTable = ttk.Treeview(self.win, selectmode='browse',columns=lb_header, show="headings")
             # tree.grid(in_=self.Labelframe_results)
             self.resTable.place(height=1870)
-            self.resTable.bind("<Double-1>", self.showEntSIngle)
+            if(self.entitiesCheckBoxV.get() == 1):
+                self.resTable.bind("<Double-1>", self.showEntSIngle)
             vsb = ttk.Scrollbar(self.win, orient="vertical", command=self.resTable.yview)
             vsb.place(x=760, y=80, height=200)
             self.resTable.configure(yscrollcommand=vsb.set)
@@ -882,6 +882,7 @@ class Toplevel1:
             self.winES.destroy()
             self.winES = None
         entList = ((list(self.resTable.item(self.resTable.focus()).values()))[2][3]).split()
+        print((list(self.resTable.item(self.resTable.focus()).values())))
 
         self.winES = tk.Toplevel()
         self.winES.geometry("300x220")
