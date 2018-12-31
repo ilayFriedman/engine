@@ -84,6 +84,7 @@ class Searcher:
             queryNum = ""
             descText = ""
             #+ str(nerative[queryNum][1])
+            stop = timeit.default_timer()
             for line in querysFile:
                 if (inPart):
                     querysDict[queryNum] = [queryText, descText+ str(nerative[queryNum][1]), [],[]]
@@ -103,6 +104,7 @@ class Searcher:
                     startDescReading = True
 
             querysFile.close()
+            stop = timeit.default_timer()
         destStopWords = ["etc.", "i.e", "considered", "information", "documents", "document", "discussing", "discuss",
                          "following", "issues", "identify", "find", "must", "find", "so-called","impact","factor",
                          "shows", "mention", "purpose", "include", "concentrate", "required", "relevant", "relevants"]
@@ -112,6 +114,7 @@ class Searcher:
             queryNoStem = Parse(self.stop_words).parseText(querysDict[q][0])
             if (self.doStem == 1):
                 querysDict[q][0] = self.makeStemList(queryNoStem)
+            else: querysDict[q][0] = queryNoStem
             querysDict[q][1] = Parse(list(set().union(self.stop_words, destStopWords))).parseText(querysDict[q][1])
             if (self.doStem == 1):
                 querysDict[q][1] = self.makeStemList(querysDict[q][1])
@@ -132,6 +135,7 @@ class Searcher:
                 querysDict[q][2] = semanticQuery
                 querysDict[q][3] = list(set().union(querysDict[q][3], semanticQuery))
                 del semanticQuery
+            stop = timeit.default_timer()
             resList = self.ranker.calculateRate(querysDict[q], True)
             tmpDict = {}
             theRanking = []
@@ -141,7 +145,7 @@ class Searcher:
                         if (self.fileIndex[doc][2] == city):
                             tmpDict[doc] = resList[doc]
                     x = itertools.islice(tmpDict.items(), 0, 50)
-                    theRanking.clear()
+                    del theRanking
                     for i in x:
                         theRanking.append(i)
             else:
