@@ -172,13 +172,13 @@ class Toplevel1:
         self.postingPathTextField.configure(textvariable=partB_support.postingTextField)
 
         self.resetAllButton = ttk.Button(top)
-        self.resetAllButton.place(relx=0.633, rely=0.389, height=25, width=76)
+        self.resetAllButton.place(relx=0.60, rely=0.389, height=25)
         self.resetAllButton.configure(takefocus="")
-        self.resetAllButton.configure(text='''Reset All''')
+        self.resetAllButton.configure(text='''Reset & Delete All''')
         self.resetAllButton.configure(command=self.resetAll)
 
         self.allTermsButton = ttk.Button(top)
-        self.allTermsButton.place(relx=0.546, rely=0.389, height=25, width=76)
+        self.allTermsButton.place(relx=0.513, rely=0.389, height=25, width=76)
         self.allTermsButton.configure(takefocus="")
         self.allTermsButton.configure(text='''All Terms''')
         self.allTermsButton.configure(state='disabled')
@@ -795,7 +795,7 @@ class Toplevel1:
             with open(finalP, "w") as saveAs:
                 saveAs.writelines(self.preSave)
                 saveAs.close()
-            messagebox.showinfo('YES!', "The results are saved! ")
+            messagebox.showinfo('YES!', "The results are saved!\nThe name of the saved file: "+ nameRes + "\nsaved in: "+ pathForSave)
             self.IDQ = self.IDQ + 1
         except:
             messagebox.showerror('NO!', "The results are NOT saved! ")
@@ -809,7 +809,7 @@ class Toplevel1:
             with open(finalP, "w") as saveAs:
                 saveAs.writelines(self.preSave)
                 saveAs.close()
-            messagebox.showinfo('YES!', "The results are saved! ")
+            messagebox.showinfo('YES!', "The results are saved!\nThe name of the saved file: "+ nameRes + "\nsaved in: "+ pathForSave)
             self.IDQ = self.IDQ + 1
         except:
             messagebox.showerror('NO!', "The results are NOT saved! ")
