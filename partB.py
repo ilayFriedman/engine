@@ -661,6 +661,7 @@ class Toplevel1:
 
 
     def resultsQueryMulti(self):
+
         if(self.multiQueryTextField.get() == None or self.multiQueryTextField.get() == ""):
             messagebox.showerror('oops!', "Need insert valid path!")
             return
@@ -700,7 +701,6 @@ class Toplevel1:
         for key in self.dictRes.keys():
             self.QureyIDTable.insert('', 'end', values=(key))
 
-
         ############################
         lb_header1 = ['No', 'File Name', 'Relevance', 'Entities']
         ttk.Label(self.Multiwin, text="results for query:", font="caliberi 12 bold").pack()
@@ -737,6 +737,8 @@ class Toplevel1:
                                      , bordermode='ignore')
         self.MsaveAllResultsButton.configure(takefocus="")
         self.MsaveAllResultsButton.configure(text='''Save results of all queries together''')
+        if(self.QureyIDTable.size == (0,0)):
+            self.MsaveAllResultsButton.configure(state='disabled')
         self.MsaveAllResultsButton.configure(command=self.MsaveAllRes)
         if(i == 1):
             self.MsaveAllResultsButton.configure(state='disabled')
@@ -757,8 +759,11 @@ class Toplevel1:
         self.MresTable.delete(*self.MresTable.get_children())
         if(len(list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2]) == 0):
             self.MsaveResultsButton.configure(state='disabled')
-        self.idQ = str(list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][0])
-        self.selectQ = list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][1]
+        try:
+            self.idQ = str(list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][0])
+            self.selectQ = list(self.QureyIDTable.item(self.QureyIDTable.focus()).values())[2][1]
+        except:
+            return
         i=1
         if (self.entitiesCheckBoxV.get() ==0):
             for item in self.dictRes[(self.idQ,self.selectQ)]:
