@@ -26,7 +26,7 @@ class Searcher:
         self.citiesList = citiesList
         self.showEntities = showEntities
         self.doSemantics = doSemantics
-        with open(postPath+"/simDictXL.ujson", "r+") as Jfile:
+        with open("simDictXL.ujson", "r+") as Jfile:
             self.similarityDict = ujson.load(Jfile)
         Jfile.close()
 
@@ -76,18 +76,18 @@ class Searcher:
         start = timeit.default_timer()
         querysDict = defaultdict(list)
         resultDict = {}
-        nerative = self.nerativeMaker()
+        nerrative = self.nerrativeMaker(queryFile)
         with open(queryFile, "r+") as querysFile:
             inPart = False
             startDescReading = False
             queryText = ""
             queryNum = ""
             descText = ""
-            #+ str(nerative[queryNum][1])
+            #+ str(nerrative[queryNum][1])
             stop = timeit.default_timer()
             for line in querysFile:
                 if (inPart):
-                    querysDict[queryNum] = [queryText, descText+ str(nerative[queryNum][1]), [],[]]
+                    querysDict[queryNum] = [queryText, descText+ str(nerrative[queryNum][1]), [],[]]
                     del descText
                     descText = ""
                     inPart = False
@@ -195,19 +195,25 @@ class Searcher:
         ps = PorterStemmer()
         ans = []
         for i in range(0, len(afterParse)):
+            tmp = ""
             if (afterParse[i][0].isalpha()):
-                ans.append(ps.stem(afterParse[i]))
+                if (afterParse[i].isupper()):
+                    tmp = ps.stem(afterParse[i])
+                    ans.append(tmp.upper())
+                    del tmp
+                else:
+                    ans.append(ps.stem(afterParse[i]))
             continue
         return ans
 
-    def nerativeMaker(self):
+    def nerrativeMaker(self,queryFile):
         inPart = False
-        with open("queries.txt", "r+") as querysFile:
+        with open(queryFile, "r+") as querysFile:
             file = querysFile.readlines()
             notList = []
             yesList = []
             Q = {}
-            nerative = ""
+            nerrative = ""
             nerRead = False
             for line in file:
                 if ("<num>" in line):
@@ -216,14 +222,14 @@ class Searcher:
                     nerRead = False
                     inPart = True
                 elif (nerRead):
-                    nerative += line.lower()
+                    nerrative += line.lower()
                 elif ("<narr>" in line):
                     nerRead = True
                 if (inPart):
-                    Q[queryNum] = [nerative, "", ""]
+                    Q[queryNum] = [nerrative, "", ""]
                     inPart = False
-                    del nerative
-                    nerative = ""
+                    del nerrative
+                    nerrative = ""
             #print(Q)
             for q in Q:
                 notList = []

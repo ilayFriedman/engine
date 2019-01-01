@@ -169,6 +169,9 @@ class ReadFile:
         ps = PorterStemmer()
         for i in range(0, len(afterParse)):
             if (afterParse[i][0].isalpha()):
-                afterParse[i] = ps.stem(afterParse[i])
+                if(afterParse[i].isupper()):
+                    afterParse[i] = ps.stem(afterParse[i])
+                    afterParse[i] = afterParse[i].upper()
+                else: afterParse[i] = ps.stem(afterParse[i])
             continue
         return afterParse
