@@ -68,7 +68,7 @@ class Toplevel1:
         self.Multiwin=None
         self.languageList = None
         self.itemLineEnt = None
-        self.IDQ = 0
+        self.IDQ = 1
         self.winE = None
         self.winES = None
         self.idQ = 999
@@ -893,7 +893,6 @@ class Toplevel1:
             self.winES.destroy()
             self.winES = None
         entList = ((list(self.resTable.item(self.resTable.focus()).values()))[2][3]).split()
-        print((list(self.resTable.item(self.resTable.focus()).values())))
 
         self.winES = tk.Toplevel()
         self.winES.geometry("300x220")
