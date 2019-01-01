@@ -396,6 +396,12 @@ class Toplevel1:
                 messagebox.showerror('oops!', 'Cannot find files to load \nmake sure you generated them first!\n(or write another path)')
             elif(self.doStemmingV.get() ==0 and(os.path.exists(self.postingPathTextField.get()+"/finalIndex.txt") == False or os.path.exists(self.postingPathTextField.get() + "/citiesIndex.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/baseDict.ujson") == False or os.path.exists(self.postingPathTextField.get() + "/fileIndex.ujson") == False )):
                 messagebox.showerror('oops!', 'Cannot find files to load \nmake sure you generated them first!\n(or write another path)')
+            if(os.path.exists(self.postingPathTextField.get()+"/stop_words.txt") == False):
+                messagebox.showerror('oops!', 'You must have in you files \n "stop_words.txt" file!\nadd it and load again')
+                return
+            if(os.path.exists(self.postingPathTextField.get()+"/simDictXL.ujson") == False):
+                messagebox.showerror('oops!','You must have in you files \n "simDictXL.ujson" file!\nadd it and load again')
+                return
             else:
                 self.allTermsButton.configure(state='normal')
                 self.singleQuerySearchButton.configure(state='normal')
