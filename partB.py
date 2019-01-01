@@ -399,9 +399,6 @@ class Toplevel1:
             if(os.path.exists(self.postingPathTextField.get()+"/stop_words.txt") == False):
                 messagebox.showerror('oops!', 'You must have in you files \n "stop_words.txt" file!\nadd it and load again')
                 return
-            if(os.path.exists(self.postingPathTextField.get()+"/simDictXL.ujson") == False):
-                messagebox.showerror('oops!','You must have in you files \n "simDictXL.ujson" file!\nadd it and load again')
-                return
             else:
                 self.allTermsButton.configure(state='normal')
                 self.singleQuerySearchButton.configure(state='normal')
