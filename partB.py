@@ -416,8 +416,7 @@ class Toplevel1:
                     self.TcomboBoxLanguages.configure(values=self.languageList)
                     self.TcomboBoxLanguages.current(0)
                 self.loadedLable.configure(foreground="#000000")
-
-                self.loaded = Searcher(self.corpusPathTextField.get()+"/stop_words.txt"
+                self.loaded = Searcher(self.postingPathTextField.get()+"/stop_words.txt"
                                        ,self.postingPathTextField.get(),self.doStemmingV.get(),self.ReadBaseDict,self.ReadFileIndex,self.entitiesCheckBoxV.get(),self.semanticCheckBoxV.get())
 
     def resetQueryAera(self):
@@ -508,9 +507,14 @@ class Toplevel1:
                 string = "~### FINISH ###~ :\n" + str(stop - start) + " seconds takes to index everything.\n" + \
                          str(engineReadFile.textCount) + " files indexes!\n" + str(
                     len(engineReadFile.indexer.baseDict.keys())) + " terms is created!\n\n" + \
-                    "The index saved in "+str(self.postingPathTextField.get()) + "\n =For use Query Field : click on Load button="
+                    "The index saved in "+str(self.postingPathTextField.get()) + "\n\n =For use Query Field : click on Load button="
+                if(self.doStemmingV.get() == 1):
+                    string = "<Stemming button is ON>\n\n" + string
+                else:
+                    string = "<Stemming button is OFF>\n\n" + string
                 if(override):
-                    string = "^^^^^^ The previous index was deleted ^^^^^^\n\n\n" + string
+                    string = "^^^^^^ The previous index was deleted ^^^^^^\n" + string
+
                 messagebox.showinfo('Info about Creation', string)
                 #
                 files = os.listdir(self.postingPathTextField.get() + "/tempDir")
@@ -856,24 +860,31 @@ class Toplevel1:
         if(self.winE != None):
             self.winE.destroy()
             self.winE=None
-        entList = ((list(self.MresTable.item(self.MresTable.focus()).values()))[2][3]).split()
+        if (len((list(self.MresTable.item(self.MresTable.focus()).values()))[2]) > 3):
 
-        self.winE = tk.Toplevel()
-        self.winE.geometry("300x220")
-        self.winE.title("Entities of this query")
-        scrollbar = tk.Scrollbar(self.winE)
-        scrollbar.pack(side='right', fill='y')
-        self.winE.configure(background='#000000')
+            entList = ((list(self.MresTable.item(self.MresTable.focus()).values()))[2][3]).split()
+            print(entList)
+            self.winE = tk.Toplevel()
+            self.winE.geometry("300x220")
+            self.winE.title("Entities of this query")
+            scrollbar = tk.Scrollbar(self.winE)
+            scrollbar.pack(side='right', fill='y')
+            self.winE.configure(background='#000000')
 
-        mylist = tk.Listbox(self.winE, yscrollcommand=scrollbar.set, width=200)
-        mylist.insert(tk.END, (str(entList[0]) + " : " + (str(entList[1])) + "\n"))
-        mylist.insert(tk.END, (str(entList[2]) + " : " + (str(entList[3])) + "\n"))
-        mylist.insert(tk.END, (str(entList[4]) + " : " + (str(entList[5])) + "\n"))
-        mylist.insert(tk.END, (str(entList[6]) + " : " + (str(entList[7])) + "\n"))
-        mylist.insert(tk.END, (str(entList[8]) + " : " + (str(entList[9])) + "\n"))
+            mylist = tk.Listbox(self.winE, yscrollcommand=scrollbar.set, width=200)
+            if(len(entList)>1):
+                mylist.insert(tk.END, (str(entList[0]) + " : " + (str(entList[1])) + "\n"))
+            if (len(entList) > 2):
+                mylist.insert(tk.END, (str(entList[2]) + " : " + (str(entList[3])) + "\n"))
+            if (len(entList) > 4):
+                mylist.insert(tk.END, (str(entList[4]) + " : " + (str(entList[5])) + "\n"))
+            if (len(entList) > 6):
+                mylist.insert(tk.END, (str(entList[6]) + " : " + (str(entList[7])) + "\n"))
+            if (len(entList) > 8):
+                mylist.insert(tk.END, (str(entList[8]) + " : " + (str(entList[9])) + "\n"))
 
-        mylist.pack(side=tk.LEFT, fill=tk.BOTH)
-        scrollbar.config(command=mylist.yview)
+            mylist.pack(side=tk.LEFT, fill=tk.BOTH)
+            scrollbar.config(command=mylist.yview)
 
 
 

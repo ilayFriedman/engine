@@ -16,7 +16,7 @@ class Searcher:
     def __init__(self, stopWords, postPath, doStem, baseDict, fileIndex, showEntities, doSemantics, citiesList=None):
         self.baseDic = baseDict
         self.fileIndex = fileIndex
-        with open(postPath+stopWords, "r+") as SW:
+        with open(stopWords, "r+") as SW:
             self.stop_words = map(str.strip, SW.readlines())
         SW.close()
         self.stop_words = set(self.stop_words)
@@ -155,7 +155,7 @@ class Searcher:
                 resultDict[(q, stringQ)] = self.addEntities(theRanking)
             else:
                 resultDict[(q, stringQ)] = theRanking
-        self.createAnswerFile(resultDict)
+        #self.createAnswerFile(resultDict)
         #print(resultDict)
         stop = timeit.default_timer()
         print("### Time to Answer ###", stop - start, "seconds")
