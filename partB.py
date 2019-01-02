@@ -871,7 +871,7 @@ class Toplevel1:
         if (len((list(self.MresTable.item(self.MresTable.focus()).values()))[2]) > 3):
 
             entList = ((list(self.MresTable.item(self.MresTable.focus()).values()))[2][3]).split()
-            print(entList)
+            # print(entList)
             self.winE = tk.Toplevel()
             self.winE.geometry("300x220")
             self.winE.title("Entities of this query")
@@ -900,24 +900,30 @@ class Toplevel1:
         if (self.winES != None):
             self.winES.destroy()
             self.winES = None
-        entList = ((list(self.resTable.item(self.resTable.focus()).values()))[2][3]).split()
+        if (len((list(self.resTable.item(self.resTable.focus()).values()))[2]) > 3):
+            entList = ((list(self.resTable.item(self.resTable.focus()).values()))[2][3]).split()
 
-        self.winES = tk.Toplevel()
-        self.winES.geometry("300x220")
-        self.winES.title("Entities of this query")
-        scrollbar = tk.Scrollbar(self.winES)
-        scrollbar.pack(side='right', fill='y')
-        self.winES.configure(background='#000000')
+            self.winES = tk.Toplevel()
+            self.winES.geometry("300x220")
+            self.winES.title("Entities of this query")
+            scrollbar = tk.Scrollbar(self.winES)
+            scrollbar.pack(side='right', fill='y')
+            self.winES.configure(background='#000000')
 
-        mylist = tk.Listbox(self.winES, yscrollcommand=scrollbar.set, width=200)
-        mylist.insert(tk.END, (str(entList[0]) + " : " + (str(entList[1])) + "\n"))
-        mylist.insert(tk.END, (str(entList[2]) + " : " + (str(entList[3])) + "\n"))
-        mylist.insert(tk.END, (str(entList[4]) + " : " + (str(entList[5])) + "\n"))
-        mylist.insert(tk.END, (str(entList[6]) + " : " + (str(entList[7])) + "\n"))
-        mylist.insert(tk.END, (str(entList[8]) + " : " + (str(entList[9])) + "\n"))
+            mylist = tk.Listbox(self.winES, yscrollcommand=scrollbar.set, width=200)
+            if(len(entList) > 0):
+                mylist.insert(tk.END, (str(entList[0]) + " : " + (str(entList[1])) + "\n"))
+            if (len(entList) > 2):
+                mylist.insert(tk.END, (str(entList[2]) + " : " + (str(entList[3])) + "\n"))
+            if (len(entList) > 4):
+                mylist.insert(tk.END, (str(entList[4]) + " : " + (str(entList[5])) + "\n"))
+            if (len(entList) > 6):
+                mylist.insert(tk.END, (str(entList[6]) + " : " + (str(entList[7])) + "\n"))
+            if (len(entList) > 8):
+                mylist.insert(tk.END, (str(entList[8]) + " : " + (str(entList[9])) + "\n"))
 
-        mylist.pack(side=tk.LEFT, fill=tk.BOTH)
-        scrollbar.config(command=mylist.yview)
+            mylist.pack(side=tk.LEFT, fill=tk.BOTH)
+            scrollbar.config(command=mylist.yview)
 
 
 if __name__ == '__main__':
