@@ -533,9 +533,10 @@ class Toplevel1:
 
     def addCities(self):
         i=0
-        for city in self.ReadCitiesIndex:
-            self.citiesList.insert(i,city)
-            i=i+1
+        for city in sorted(self.ReadCitiesIndex.keys()):
+            if (self.ReadCitiesIndex[city][0] != ""):
+                self.citiesList.insert(i, city)
+                i = i + 1
     def resetAll(self):
         try:
             self.loadedLable.configure(background="#d9d9d9")

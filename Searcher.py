@@ -130,6 +130,7 @@ class Searcher:
                         for sim in self.similarityDict[w.lower()]:
                             if (sim[0] not in semanticQuery):
                                 semanticQuery.append(sim[0])
+                            #print(semanticQuery)
                 if(self.doStem == 1):
                     semanticQuery = self.makeStemList(semanticQuery)
                 querysDict[q][2] = semanticQuery
@@ -155,19 +156,11 @@ class Searcher:
                 resultDict[(q, stringQ)] = self.addEntities(theRanking)
             else:
                 resultDict[(q, stringQ)] = theRanking
-        #self.createAnswerFile(resultDict)
         #print(resultDict)
         stop = timeit.default_timer()
         print("### Time to Answer ###", stop - start, "seconds")
         return (resultDict)
 
-    def createAnswerFile(self, results):
-        with open("trec/ourAnswers.txt", "w+") as file:
-            for res in results.keys():
-                for i in results[res]:
-                    string = str(res[0]) + " 0 " + i[0] + " 1"
-                    file.write(string + "\n")
-            file.close()
 
     def addEntities(self, docList):
         entitiesDict = {}
